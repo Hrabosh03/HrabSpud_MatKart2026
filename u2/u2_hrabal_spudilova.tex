@@ -1,0 +1,549 @@
+\documentclass[12pt]{article}
+\usepackage[czech]{babel}
+\usepackage{graphicx}
+\usepackage{parskip}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{microtype}
+\usepackage{url}
+\usepackage{hyperref}
+\lstset{
+    language=Python,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue},  
+    commentstyle=\color{gray},   
+    stringstyle=\color{red},   
+    breaklines=true,             
+    frame=single,
+    captionpos=b
+}
+
+\addto\captionsczech{
+\renewcommand{\lstlistingname}{Kód}}
+\pagestyle{empty}
+\begin{document}
+
+\begin{center}
+    {\large\scshape Univerzita Karlova} \\
+    {\large\scshape Přírodovědecká fakulta} \\
+
+    \includegraphics[width=0.7\textwidth]{logo_prf}
+        
+    {\large Matematická kartografie} \\
+    
+    \vspace{2cm}
+    
+    {\Large Úloha č. 2: Konstrukce polyedrických glóbů} \\    
+
+    \vspace{3cm}
+    
+    {\large Matěj Hrabal, Kateřina Spudilová} \\
+    {\large\scshape 1. n-gkdpz} \\
+    
+    \vfill
+    
+    {\large Praha 2026} \\
+\end{center}
+
+\newpage
+{\large\textbf{Zadání}}
+
+\begin{center}
+    \includegraphics[width=1\linewidth]{zadani1.png}
+\end{center}
+\newpage
+\underline {Údaje o bonusových úlohách}
+
+Ze zadaných kroků byly řešeny následující:
+\begin{itemize}
+    \item Konstrukce polyedrického globu \emph{(20-stěn)}. (+10b)   
+    \item Výpočet meridianové konvergence. (+5b)
+    \item Kontrola zkresléní v knihovně Proj4. (+15b)
+    
+\end{itemize}
+
+\newpage
+{\section {Teoretický rozbor problému}}
+{\subsection {Geometrie vybraných platónských těles}}
+Platonská tělesa jsou taková, jejichž stěny tvoří stejné a pravidelné $n$-úhelníky. Existuje 5 platonských těles -- čtyřstěn, šestistěn (krychle), osmistěn, dvanáctistěn a dvacetistěn. Platonským tělesům je možné opsat a vepsat sféru.
+
+{\subsubsection {Pravidelný dvanáctistěn}}
+Výpočet parametrů pravidelného dvanáctistěnu, jehož hrany tvoří pravidelné pětiúhelníky s délkou hrany $a$, je obtížnější než pro čtyřstěn, šestistěn a osmistěn. S ohledem na součet úhlů $S = (n - 2)\pi$ v pravidelném $n$ úhelníku pro úhel mezi dvěma stranami pětiúhelníku platí $\omega = \frac{3}{5}\pi = 108^\circ$. Délku stěnové úhlopříčky $u_s$ v rovnoramenném trojúhelníku $CDE$ určíme z kosinové věty
+\[
+    u_s^2 = 2a^2 - 2a^2 \cos \omega = 2a^2(1 - \cos \omega), \Rightarrow u_s = a\sqrt{2(1 - \cos \omega)} = a\frac{1 + \sqrt{5}}{2},
+\]
+kde $\cos 108^\circ = -\frac{1}{1+\sqrt{5}}$, viz Obr. 1. Poloměr $r_s = |AS|$ kružnice opsané pětiúhelníku určíme opět z rovnoramenného trojúhelníku, $\omega' = 72^\circ$, za pomoci kosinové věty
+\[
+    a^2 = 2r_s^2 - 2r_s^2 \cos \omega' = 2r_s^2(1 - \cos \omega'), \Rightarrow r_s = \frac{a}{\sqrt{2(1 - \cos \omega')}} = \frac{a}{10}\sqrt{10(5 + \sqrt{5})},
+\]
+
+\begin{figure}[htbp]
+    \centering   
+    \includegraphics[width=0.8\textwidth]{obrazek_5.png}
+    \caption{Výpočet délky stěnové úhlopříčky $u_s$, poloměru $r_s$ kružnice opsané a poloměru $\rho_s$ kružnice vepsané pětiúhelníku.}
+\end{figure}
+
+\noindent kde $\cos 72^\circ = \frac{1}{1+\sqrt{5}}$. Poloměr $\rho_s$ kružnice vepsané pětiúhelníku určíme z Pythagorovy věty
+\[
+    \rho_s^2 = r_s^2 - \frac{a^2}{4} = \frac{a^2}{10}(5 + \sqrt{5}) - \frac{a^2}{4}, \Rightarrow \rho_s = \frac{a}{2}\sqrt{\frac{5 + 2\sqrt{5}}{5}}.
+\]
+Vzdálenost $e$ vrcholu $D$ pravidelného pětiúhelníku od úhlopříčky $CE$ s délkou $u_s$ vypočteme opět Pythagorovou větou
+\[
+    e^2 = a^2 - \frac{u_s^2}{4} = a^2 - \frac{a^2}{4}(1 + \sqrt{5})^2, \Rightarrow e = \frac{a}{4}\sqrt{10 - 2\sqrt{5}}.
+\]
+V dalším kroku určíme úhel $\beta$ mezi ploškami dvanáctistěnu, budeme pracovat se dvěma sousedními ploškami, tj. dolní podstavou $ABCDE$ a $CDLKJ$, viz Obr. 2. Trojúhelník $BJC$ posuneme ve směru $CD$ o hodnotu $a$ tak, aby body $C$ a $D$ splynuly; vznikne čtyřboký jehlan $EB_1J_1LD$. Výšku $v = |J_2D|$ v trojúhelníku $DJ_1L$ určíme z Pythagorovy věty. Protože
+\[
+    u_s - a = a\frac{1 + \sqrt{5}}{2} - a = a\frac{\sqrt{5} - 1}{2},
+\]
+pak
+\[
+    a^2 = v^2 + \frac{(u_s - a)^2}{4} = v^2 + a^2\frac{6 - 2\sqrt{5}}{16} \rightarrow v = a\sqrt{\frac{5 + \sqrt{5}}{8}},
+\]
+kde $\cos 18^\circ = \sqrt{\frac{5+\sqrt{5}}{8}}$. Hledaný úhel $B_1DJ_2$ označme $\alpha$, určíme ho z tohoto pravoúhlého
+\[
+    \sin \frac{\alpha}{2} = \frac{u_s}{2v} = \frac{\sqrt{2}(1 + \sqrt{5})}{2\sqrt{5 + \sqrt{5}}} = \frac{2}{\sqrt{10 - 2\sqrt{5}}} \approx 56.5825^\circ, \rightarrow \alpha = 116.5651^\circ.
+\]
+Pro další odvození předpokládejme, že dvanáctistěn řežeme rovinou $0AF$, viz Obr. 7. Sféra vepsaná dvanáctistěnu se středem v jeho těžišti se jej dotýká v těžišti každé ze stěn. V pětiúhelníku $FGQPO$ bude dotykovým bodem $U$. Pro úhel $\beta$ platí
+\[
+    \beta = 180^\circ - \alpha,
+\]
+zeměpisnou šířku bodu $U$ určíme jako
+\[
+    u_\alpha = 90^\circ - \beta = \alpha - 90^\circ \approx 26.5651^\circ.
+\]
+Bod $K_1 \equiv U$ je tedy kartografickým pólem použitým pro zobrazení této stěny, stejnou zeměpisnou šířku mají i středy zbývajících plošek $K_2 - K_5$ nad rovinou $z = 0$ (severní polokoule). Díky středové symetrii
+
+\begin{figure}[htbp]
+    \centering  
+    \includegraphics[width=0.6\textwidth]{obrazek_6.png}
+    \caption{Čtyřboký jehlan $EB_1J_1LD$ a trojúhelník $DJ_1L$.}
+\end{figure}
+
+\noindent vrcholů dvanáctistěnu vzhledem k bodu $0$ platí pro středy plošek $K_6 - K_{10}$ na jižní polokouli $u_j = -u_\alpha$. Rovina základního poledníku bude totožná s rovinou řezu $0AF$, zeměpisná délka bodu $K_1$ je $v_1 = 36^\circ$, zeměpisné délky ostatních kartografických pólů mají odlehlost $72^\circ$. Pro kartografické póly $K_1 - K_5$ tedy platí
+\[
+    K_1 = [u_\alpha, 0^\circ], \quad K_2 = [u_\alpha, 72^\circ], \quad K_3 = [u_\alpha, 144^\circ], \quad K_4 = [u_\alpha, 216^\circ], \quad K_5 = [u_\alpha, 288^\circ],
+\]
+pro kartografické póly $K_6 - K_{10}$
+\[
+    K_6 = [-u_\alpha, 36^\circ], \quad K_7 = [-u_\alpha, 108^\circ], \quad K_8 = [-u_\alpha, 180^\circ], \quad K_9 = [-u_\alpha, 252^\circ], \quad K_{10} = [-u_\alpha, 324^\circ],
+\]
+zbylé dva kartografické póly $K_{11}, K_{12}$ se nacházejí v severním a jižním pólu.
+
+\noindent Poloměr sféry vepsané dvanáctistěnu označme jako $\rho = |0U|$. Z pravoúhlého trojúhelníku $0UV$ vyplývá, že
+\[
+    \tan \frac{\alpha}{2} = \frac{\rho}{\rho_s}, \rightarrow \rho = \rho_s \tan \frac{\alpha}{2}.
+\]
+Protože
+\[
+    \sin \frac{\alpha}{2} = \frac{2}{\sqrt{10 - 2\sqrt{5}}}, \qquad \cos \frac{\alpha}{2} = \sqrt{1 - \sin^2 \frac{\alpha}{2}} = \sqrt{\frac{6 - 2\sqrt{5}}{10 - 2\sqrt{5}}},
+\]
+platí
+\[
+    \rho = \rho_s \frac{\sin \frac{\alpha}{2}}{\cos \frac{\alpha}{2}} = \frac{a}{20}\sqrt{10(25 + 11\sqrt{5})}.
+\]
+Sféra opsaná dvanáctistěnu bude procházet body $ACKSPF$ řezu, její poloměr označme jako $r = |0F|$, určíme ho z pravoúhlého trojúhelníku $0UF$
+\[
+    r = \sqrt{r_s^2 + \rho^2} = \frac{\sqrt{3}(1 + \sqrt{5})}{4}a.
+\]
+Úhel $\gamma$ spočteme ze vztahu
+\[
+    \tan \gamma = \frac{r_s}{\rho} = \frac{2\sqrt{10(5 + \sqrt{5})}}{\sqrt{10(25 + 11\sqrt{5})}} \approx 37.3774^\circ,
+\]
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{obrazek_7.png}
+    \caption{Řez dvanáctistěnem rovinou $0AF$ odpovídající rovině základního poledníku se znázorněním určovaných parametrů.}
+\end{figure}
+
+\noindent jeho doplněk $u_\gamma = 90^\circ - \gamma \approx 52.6226^\circ$. Představuje zeměpisnou šířku vrcholů $P - T$ dvanáctistěnu, vzhledem k symetrii pro vrcholy $A - E$ platí $u_j = -u_\gamma$, ve směru zeměpisné délky $v$ je jejich odlehlost $72^\circ$. Pro vrcholy $A - E$ platí
+\[
+    A = [-u_\gamma, 0^\circ], \quad B = [-u_\gamma, 72^\circ], \quad C = [-u_\gamma, 144^\circ], \quad D = [-u_\gamma, 216^\circ], \quad E = [-u_\gamma, 288^\circ],
+\]
+pro vrcholy $P - T$ pak
+\[
+    P = [u_\gamma, 36^\circ], \quad Q = [u_\gamma, 108^\circ], \quad R = [u_\gamma, 180^\circ], \quad S = [u_\gamma, 252^\circ], \quad T = [u_\gamma, 324^\circ].
+\]
+Úhel $\delta$ určíme z rovnoramenného trojúhelníku $0FA$ s využitím kosinové věty
+\[
+    a^2 = 2r^2 - 2r^2 \cos \delta, \rightarrow \cos \delta = \frac{2r^2 - a^2}{2r^2} = \frac{5 + 3\sqrt{5}}{3(3 + \sqrt{5})} \approx 41.8103^\circ.
+\]
+Hodnota $u_\delta = 90^\circ - \gamma - \delta = 10.8123^\circ$ představuje zeměpisnou šířku vrcholů $G, I, K, M, O$ dvanáctistěnu, pro zbývajících 5 vrcholů $F, H, J, L, N$ platí $u_j = -u_\delta$, jejich odlehlost ve směru $v$ je $72^\circ$. Souřadnice vrcholů $G, I, K, M, O$ určíme jako
+\[
+    G = [u_\delta, 36^\circ], \quad I = [u_\delta, 108^\circ], \quad K = [u_\delta, 180^\circ], \quad M = [u_\delta, 252^\circ], \quad O = [u_\delta, 324^\circ],
+\]
+souřadnice vrcholů $F, H, J, L, N$ jako
+\[
+    F = [-u_\delta, 0^\circ], \quad H = [-u_\delta, 72^\circ], \quad J = [-u_\delta, 144^\circ], \quad L = [-u_\delta, 216^\circ], \quad N = [-u_\delta, 288^\circ].
+\]
+Z Obr. 3 je patrné, že platí $\beta + 2\gamma + \delta = 180^\circ$.
+        
+{\subsubsection {Pravidelný dvacetistěn}}
+Pravidelný dvacetistěn (ikosaedr) je platónské těleso, jehož povrch je tvořen 20 shodnými rovnostrannými trojúhelníky. Těleso má celkem 12 vrcholů a 30 hran. Označíme-li délku hrany jako $a$, můžeme poloměr sféry opsané $r$ a sféry vepsané $\rho$ určit ze vztahů:
+\[
+    r = \frac{a}{4}\sqrt{10 + 2\sqrt{5}}, \qquad \rho = \frac{a}{12}\sqrt{3}(3 + \sqrt{5}).
+\]
+
+Poloměr kružnice opsané stěnovému trojúhelníku $r_s$ a kružnice jemu vepsané $\rho_s$ snadno odvodíme z vlastností rovnostranného trojúhelníku jako:
+\[
+    r_s = \frac{a\sqrt{3}}{3}, \qquad \rho_s = \frac{a\sqrt{3}}{6}.
+\]
+
+Úhel $\beta$ svíraný dvěma sousedními stěnami dvacetistěnu lze spočítat pomocí kosinové věty z příslušného řezu tělesem. Platí:
+\[
+    \cos\beta = -\frac{\sqrt{5}}{3} \implies \beta \approx 138{,}1897^\circ.
+\]
+
+Pro definování sítě a následné kartografické zobrazení umístíme vrcholy dvacetistěnu do soustavy sférických souřadnic (zeměpisná šířka $u$, zeměpisná délka $v$). Orientaci tělesa zvolíme tak, aby dva protilehlé vrcholy ležely přesně na severním a jižním pólu sféry. Zbývajících 10 vrcholů pak tvoří dva rovnoběžkové prstence po pěti vrcholech.
+
+Zeměpisnou šířku prstenců označíme $u_\alpha$ pro severní polokouli a $-u_\alpha$ pro jižní. Z vlastností pravoúhlých trojúhelníků vepsaných do dvacetistěnu a poměrů zlatého řezu lze vyjádřit tangens této šířky jako:
+\[
+    \tan u_\alpha = \frac{1}{2} \implies u_\alpha = \arctan\left(\frac{1}{2}\right) \approx 26{,}5651^\circ.
+\]
+
+Souřadnice vrcholů na severním pólu je $V_S = [90^\circ, 0^\circ]$. Pětice vrcholů $A-E$ ležících na severním prstenci $u_\alpha$ má ve směru zeměpisné délky $v$ pravidelnou odlehlost $72^\circ$. Platí pro ně:
+\[
+    A = [u_\alpha, 0^\circ], \quad B = [u_\alpha, 72^\circ], \quad C = [u_\alpha, 144^\circ], \quad D = [u_\alpha, 216^\circ], \quad E = [u_\alpha, 288^\circ].
+\]
+
+Pětice vrcholů jižního prstence $F-J$ leží na zeměpisné šířce $-u_\alpha$. Aby do sebe trojúhelníkové stěny zapadaly, jsou tyto vrcholy vůči severnímu prstenci fázově posunuty o polovinu středového úhlu, tedy o $36^\circ$:
+\[
+    F = [-u_\alpha, 36^\circ], \quad G = [-u_\alpha, 108^\circ], \quad H = [-u_\alpha, 180^\circ], \quad I = [-u_\alpha, 252^\circ], \quad J = [-u_\alpha, 324^\circ].
+\]
+
+Jižní pól je definován jako $V_J = [-90^\circ, 0^\circ]$.
+
+\subsubsection*{Kartografické póly a dualita těles}
+Při tvorbě mapových výřezů do jednotlivých stěn dvacetistěnu je nezbytné určit polohy jejich středů (kartografických pólů). Zde lze s výhodou využít faktu, že pravidelný dvacetistěn a pravidelný dvanáctistěn jsou tělesa \textit{duální}. To znamená, že středy stěn dvacetistěnu prostorově odpovídají vrcholům dvanáctistěnu a naopak. 
+
+Zeměpisné šířky středových bodů stěn dvacetistěnu jsou proto totožné s dříve odvozenými úhly pro vrcholy dvanáctistěnu. Polohy středů pěti horních a pěti dolních ploch leží na zeměpisných šířkách $u_\gamma \approx 52{,}6226^\circ$ a $-u_\gamma$, zatímco zbývajících 10 ploch směřujících k rovníku má středy na šířkách $u_\delta \approx 10{,}8123^\circ$ a $-u_\delta$.
+
+{\subsection {Gnómonická projekce}}
+{\subsubsection {Vlastnosti gnómonické projekce}}
+V následující části je stručně představeno, jak se pro gnomonickou projekci určí následující parametry:
+
+\begin{itemize}
+    \item měřítko $m_p$ v poledníku, měřítko $m_r$ v rovnoběžce,
+    \item poloosy $a$, $b$ Tissotovy indikatrix,
+    \item úhel $\omega'$ mezi obrazem poledníku a rovnoběžky,
+    \item maximální úhlové zkreslení $\Delta\omega$,
+    \item měřítko ploch $P$,
+    \item meridiánová konvergence $c$.
+\end{itemize}
+
+V prvním kroku je potřeba určit parciální derivace zobrazovacích rovnic podle jednotlivých proměnných $u$ a $v$. Zobrazovací rovnice jsou označeny jako $f$ a $g$. Parciální derivace jsou potom
+
+\begin{align*}
+    \frac{\partial f}{\partial u} &= f_u = -\frac{R}{\cos^2(90 - u)} \cos v, \\
+    \frac{\partial f}{\partial v} &= f_v = -R \tan(90 - u) \sin v, \\
+    \frac{\partial g}{\partial u} &= g_u = -\frac{R}{\cos^2(90 - u)} \sin v, \\
+    \frac{\partial g}{\partial v} &= g_v = R \tan(90 - u) \cos v.
+\end{align*}
+
+Dále jsou tyto parciální derivace označovány jako $f_u, f_v, g_u, g_v$.
+
+\noindent \textbf{Měřítko v poledníku} $m_p$ je dáno vztahem
+\[
+    m_p^2 = \frac{f_u^2 + g_u^2}{R^2},
+\]
+po dosazení za parciální derivace je získán výsledný tvar pro gnomonickou projekci
+\[
+    m_p = \frac{1}{\sin^2 u}.
+\]
+
+\noindent \textbf{Měřítko v rovnoběžce} $m_r$ je určeno ze vztahu
+\[
+    m_r = \frac{f_v^2 + g_v^2}{R^2 \cos^2 u},
+\]
+po dosazení a upravení je získán výsledný tvar pro gnomonickou projekci
+\[
+    m_r = \frac{1}{\sin u}.
+\]
+
+\noindent Pro poloosy $a, b$ Tissotovy elipsy v případě jednoduchých zobrazení platí
+\[
+    a = m_p, \quad b = m_r.
+\]
+
+\noindent \textbf{Úhel $\omega'$ mezi obrazem poledníku a rovnoběžky} je dán vztahem
+\[
+    \tan \omega' = \frac{g_u f_v - f_u g_v}{f_u f_v + g_u g_v}.
+\]
+Jmenovatel v uvedeném vztahu je roven 0 -- jedná se o ortogonální zobrazení, tudíž
+\[
+    \tan \omega' = \mp \infty \quad \rightarrow \quad \omega' = \mp \frac{\pi}{2} = 90^\circ.
+\]
+
+\noindent Pro \textbf{maximální úhlové zkreslení} $\Delta\omega$ platí
+\[
+    \sin \frac{\Delta\omega}{2} = \frac{|b - a|}{b + a} = \frac{|m_r - m_p|}{m_r + m_p},
+\]
+což je po dosazení a úpravě upraveno do vztahu
+\[
+    \Delta\omega = \frac{\sin u - 1}{\sin u + 1}.
+\]
+
+\noindent \textbf{Měřítko ploch} $P$ lze vyjádřit jako
+\[
+    P = \frac{g_u f_v - f_u g_v}{R^2 \cos u},
+\]
+přičemž pro jednoduchá zobrazení platí, že
+\[
+    P = m_p m_r,
+\]
+kde po dosazení a upravení vztahu, platí pro gnomonickou projekci
+\[
+    P = \frac{1}{\sin^3 u}.
+\]
+
+\noindent Posledním parametrem je \textbf{meridiánová konvergence} $c$, která je definována jako rozdíl mezi směrem základního a místního poledníku v daném bodě. Pro její výpočet je potřeba určit směrnici poledníku $\sigma_p$, pro kterou platí
+\[
+    \tan \sigma_p = \frac{g_u}{f_u}.
+\]
+Dosazením a upravením vztahu získáme
+\[
+    \sigma_p = v.
+\]
+
+\noindent Meridiánová konvergence je poté vypočtena jako
+\[
+    c = |\sigma_p - \sigma_0| = \left| \sigma_p - \frac{\pi}{2} \right|,
+\]
+kde $\sigma_0$ je směrnice základního poledníku $\sigma_0 = \frac{\pi}{2}$.
+\vspace{0.3cm}
+
+\noindent Ve výše uvedených vztazích, stejně tak jako ve zobrazovacích rovnicích je možné souřadnice $(u, v)$ zaměnit za kartografické souřadnice $(\text{š}, d)$.
+
+
+{\subsection {Konstrukce polyedrických globů}}
+Glóby budou konstruovány s měřítkovým číslem $M$, pro které platí vztah
+\[
+    M = \frac{R}{r},
+\]
+kde $R$ je poloměr sféry a $r$ poloměr vepsané sféry do příslušného tělesa. Na základě zadaného měřítkového čísla $M$ lze určit $r$ jako $r = \frac{R}{M}$. Pokud je znám vztah mezi poloměrem vepsané sféry $r$ platónskému tělesu a jeho stranou $a$, je možné určit velikost strany $a$ odpovídající danému měřítku a glób následně upravit tak, aby tomuto měřítku odpovídal.
+
+Proces konstrukce polyedrického glóbu obsahuje několik na sebe navazujících kroků. Prvním krokem je definice souřadnic krajních bodů pro každou stěnu zvoleného polyedru. Pro tuto vymezenou plošku je následně generována geografická síť poledníků a rovnoběžek s důrazem na její optimální vzorkování. Do připraveného základu jsou dále vykresleny vektorové vrstvy obsahující lomové body kontinentů. Veškerá data vztažená k dané stěně, jejíž kartografický pól leží v jejím těžišti, jsou poté transformována do obecné polohy. V závěrečné fázi výpočtu dochází ke spojení vrcholů plošky, čímž je definován hraniční polygon sloužící k ořezu dat. Z takto připravených a oříznutých segmentů je následně v prostředí externího grafického editoru zkonstruován výsledný plášť tělesa.
+        
+{\subsubsection {Tvorba geografické sítě}} 
+Geografická síť bude na příslušné plošce vytvářena na intervalu $\langle \underline{u}, \overline{u} \rangle \times \langle \underline{v}, \overline{v} \rangle$. Pro generování sítě je nutné zavést parametry určující rozestupy mezi poledníky $\Delta v$ a rovnoběžkami $\Delta u$ a parametr kroku vzorkování rovnoběžky $\delta u$ a poledníku $\delta v$. Tyto hodnoty byly zvoleny $\Delta u = \Delta v = 10^\circ$ a $\delta u = \delta v = 1^\circ$. Uvedené hodnoty byly použity pro všechny plošky obou těles.
+
+Interval $\langle \underline{u}, \overline{u} \rangle \times \langle \underline{v}, \overline{v} \rangle$ určuje hranice vykreslované geografické sítě a jeho hodnoty jsou závislé na okrajových bodech dané plošky. Hodnoty $\underline{u}$ a $\underline{v}$ jsou voleny o určitou hodnotu menší než souřadnice nejjižnějšího, resp. nejzápadnějšího vrcholu plošky, naopak hodnoty $\overline{u}, \overline{v}$ jsou voleny mírně větší než souřadnice nejsevernějšího a nejvýchodnějšího vrcholu plošky. Použitá hodnota tohoto posunu byla $10 - 20^\circ$.
+
+{\subsubsection {Lomové body kontinentů}} 
+Souřadnice lomových bodů kontinentů jsou uloženy v textových souborech, zvlášť jednotlivé kontinenty -- viz přiložené soubory. V těchto souborech jsou zeměpisné souřadnice $u$ a $v$ jednotlivých bodů uloženy tak, aby je bylo možné načíst v softwaru Matlab.
+
+Ze seznamu jsou odstraněny body, jejichž kartografická šířka $\text{š}$ je menší než $20^\circ$, jelikož body blízko rovníku by měly příliš vysoké hodnoty $\rho$, body na rovníku by nebylo vzhledem k vlastnostem gnomonické projekce zobrazit vůbec.
+
+{\subsubsection{Transformace do obecné polohy zobrazení vzhledem ke kartografickému pólu}}
+Veškerá data pro danou plošku je třeba převést do obecné polohy vzhledem ke kartografickému pólu plošky, a to převodem ze zeměpisných souřadnic $(u, v)$ na souřadnice kartografické $(\text{š}, d)$. Tento převod musí být kvadrantově korektní.
+
+Kartografická šířka $\text{š}$ se vypočtena ze vztahu
+\[
+    \sin \text{š} = \sin u \sin u_k + \cos u \cos u_k \cos(v_k - v),
+\]
+kde $(u_k, v_k)$ jsou souřadnice kartografického pólu.
+
+Vztah pro výpočet kartografické délky $d$ je pak
+\[
+    \tan d = \frac{\sin(v_k - v) \cos u}{\cos u \sin u_k \cos(v_k - v) - \sin u \cos u_k},
+\]
+přičemž pro zmíněný kvadrantově korektní výpočet je třeba v Matlabu využít funkci \texttt{atan2()}.
+
+{\subsubsection {Finalizace}}
+Po provedení výše uvedených kroků je v tuto chvíli možné vygenerovat všechny plošky příslušného tělesa s geografickou sítí, lomovými body kontinentů a ořezovými body. Na základě krajních vrcholů plošek jsou vytvořeny ořezové linie, podél kterých je ploška oříznuta. Z oříznutých plošek je možné složit plášť daného tělesa a následně složit model glóbu. 
+\newpage        
+
+{\section {Vypracování}}
+{\subsection {Tvorba polyedrických globů}}
+V této části budou uvedeny základní informace týkající se softwarové implementace a zpracování úlohy.
+
+Úloha byla zpracovávána pomocí několika skriptů v softwaru Matlab. 
+
+Pro každé z řešených těles (dvanáctistěn, dvacetistěn) je vytvořen řídicí skript – \texttt{dvanactisten.m} a \texttt{dvacetisten.m}. V rámci těchto skriptů jsou zadávány potřebné parametry a jsou volány další vykreslovací funkce.
+
+Na začátku těchto skriptů jsou definovány základní parametry pro konstrukci globu – poloměr sféry $R$, rozestupy mezi rovnoběžkami a poledníky $\Delta u$, $\Delta v$ a kroky pro vzorkování rovnoběžek a poledníků $\delta u$ a $\delta v$. Dále jsou postupně generovány jednotlivé plošky daného polyedru. Pro každou plošku jsou zadány přesné souřadnice jejich vrcholů, souřadnice kartografického pólu $(u_k, v_k)$ a interval pro předběžné generování zeměpisné sítě $\langle \underline{u}, \overline{u} \rangle \times \langle \underline{v}, \overline{v} \rangle$.
+
+S uvedenými parametry je následně volána funkce \texttt{myGlobeFace.m}, která zajišťuje matematický ořez a vykreslení zeměpisné sítě, hranic kontinentů a ořezových bodů. Tato funkce v prvním kroku načte hraniční body dané plošky. Souřadnice těchto bodů převede na souřadnice kartografické ($\check{s}, d$) pomocí funkce \texttt{uv\_to\_sd.m}. Kartografické souřadnice okrajových bodů pak převede pomocí funkce \texttt{gnom.m} na souřadnice $(x,y)$ v gnomonické projekci a ty jsou poté vykresleny jako červené referenční body. 
+
+Dále je generována geografická síť voláním funkce \texttt{mygraticule.m}, které je předán interval pro generování sítě, hodnoty rozestupů, hodnoty pro vzorkování, poloměr, projekce a souřadnice kartografického pólu. Výstupem funkce jsou vektory $x$ a $y$ obsahující souřadnice poledníků a rovnoběžek v gnomonické projekci. Aby síť nepřesahovala hranice plošky, je následně v rámci funkce \texttt{myGlobeFace.m} aplikována prostorová maska pomocí vestavěné funkce \texttt{inpolygon}. Body ležící vně hranic polygonu plošky jsou nahrazeny hodnotou \texttt{NaN}, čímž je dosaženo čistého grafického ořezu. Teprve takto upravená síť je finálně vykreslena.
+
+V rámci téže funkce jsou dále postupně načteny lomové body kontinentů. Body každého kontinentu jsou převedeny do obecné polohy vzhledem ke kartografickému pólu, poté jsou odstraněny body s hodnotou $\check{s} < 20^\circ$, které by bylo v gnomonické projekci problematické zobrazit. Následně jsou lomové body převedeny do projekce $(x,y)$ a stejně jako v případě geografické sítě jsou před samotným vykreslením maskovány funkcí \texttt{inpolygon}, aby kontinenty nepřetékaly mimo stěnu tělesa. Tento postup je opakován pro všechny plošky daného tělesa.
+
+Uvedeným způsobem jsou automatizovaně vygenerovány sítě vybraných těles (dvanáctistěnu a dvacetistěnu). Prostorové rozmístění jednotlivých plošek je řešeno dynamicky pomocí maticové struktury příkazu \texttt{subplot} v jediném grafickém okně. Tyto výstupy jsou dodatečně úpraveny ve vektorovém editoru Inkscape, kde jsou připravovány pro tisk.
+        
+    {\subsection {Výpočet vlastností gnomonické projekce}}
+Druhá část úlohy spočívala ve výpočtu vlastností gnomonické projekce v okrajovém bodě $Q$ jedné ze stěn Platónského tělesa. Vztahy pro výpočet potřebných parametrů byly uvedeny v úvodní teoretické části. Výpočet potřebných parametrů byl proveden v softwaru Matlab. Pro každé těleso byl vytvořen samostatný skript -- \texttt{parametry\_dvanactisten.m} a \texttt{parametry\_dvacetisten.m}.
+
+Pro každé těleso jsou parametry určovány pro jeden zvolený okrajový bod jedné plošky. Volba těchto bodů je uvedena v tabulce č. 1.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+ & analyzovaný bod & kartografický pól \\
+\hline
+\textbf{dvanáctistěn} & $P = [52{,}6226^\circ, 36^\circ]$ & $K_1 = [26{,}5651^\circ, 0^\circ]$ \\
+\hline
+\textbf{dvacetistěn} & $A = [26{,}5651^\circ, 0^\circ]$ & $S_1 = [52{,}6226^\circ, 36^\circ]$ \\
+\hline
+\end{tabular}
+\caption{Zvolené okrajové body. Dále uvedeny souřadnice příslušného kartografického pólu. Označení bodů odpovídá značení na obrázcích v teoretické části.}
+\label{tab:okrajove_body}
+\end{table}
+
+Souřadnice kartografického pólu jsou nutné k přepočtení souřadnic okrajového bodu do obecné polohy určené tímto pólem.
+
+Mimo vypočtení parametrů byla v daném okrajovém bodě plošky vykreslena Tissotova elipsa na podkladu zeměpisné sítě. Ta byla vygenerována pomocí funkce \texttt{mygraticule.m}. Matlab neposkytuje specifickou funkci pro vykreslení elipsy, z toho důvodu muselo být vykreslení elipsy provedeno přibližně následujícím způsobem. Parametrická rovnice elipsy má tvar
+$$ x = a \cos t, $$
+$$ y = b \sin t, $$
+kde $a, b$ jsou poloosy elipsy a $t \in \langle 0, 2\pi \rangle$. Úhel $t$ odpovídá redukované zeměpisné šířce $\psi$. Vygenerování elipsy je provedeno následovně:
+
+\begin{lstlisting}[language=Matlab]
+% elipsa
+t = 0:pi/10:2*pi;
+% mpn = a, mrn = b
+xe = mpn*cos(t)*1000;
+ye = mrn*sin(t)*1000;
+E = [xe; ye];
+\end{lstlisting}
+
+Souřadnice jsou pro účely vizualizace násobeny $1~000$. Pokud by se tento krok neprovedl, nebyla by vygenerovaná elipsa kvůli své velikosti viditelná.
+
+Takto vygenerovaná elipsa má ale střed v bodě $[0, 0]$, tudíž ji je třeba posunout do příslušného bodu a správně ji natočit. K rotaci elipsy je třeba sestavit matici rotace $R_E$, přičemž úhlem podle kterého bude rotace provedena odpovídá hodnotě $\sigma_p$, tedy směrnici poledníku v daném bodě. Matice rotace má tedy tvar
+$$ R_E = \begin{bmatrix} \cos\sigma_p & -\sin\sigma_p \\ \sin\sigma_p & \cos\sigma_p \end{bmatrix}. $$
+
+Dále je třeba elipsu posunout z bodu $[x_0, y_0] = [0, 0]$ do bodu $P = [x_n, y_n]$. Výsledné souřadnice elipsy $(x_e, y_e)$ získáme pak ze vztahu
+$$ \begin{pmatrix} x_e \\ y_e \end{pmatrix} = R_E \begin{pmatrix} x_0 \\ y_0 \end{pmatrix} + \begin{pmatrix} x_n \\ y_n \end{pmatrix}. $$
+
+Popsaným postupem je možné v příslušném bodě vygenerovat Tissotovu elipsu popisující délkové zkreslení.
+
+{\subsection {Kontrola zkreslení v knihovně Proj4}}
+Pro ověření správnosti vytvořeného modelu a výpočtů v Matlabu bylo realizováno nezávislou kontrolou pomocí kartografické knihovny Proj.4. V příkazovém řádku (OSGeo4W Shell) byla definována šikmá gnomonická projekce (\texttt{+proj=gnom}), do které byly zadány souřadnice příslušných kartografických pólů (\texttt{+lat\_0}, \texttt{+lon\_0}) a referenční poloměr koule ($R = 6\,380\,000$~m). Následně byly vloženy souřadnice analyzovaného okrajového bodu $Q$ a pomocí přepínače \texttt{-V} vypsány podrobné charakteristiky zkreslení.
+
+\newpage
+{\section {Výsledky}}
+\subsection{Tvorba polyedrických glóbů}
+
+První část výsledků tvoří vytvořené modely polyedrických glóbů – dvanáctistěnu a dvacetistěnu. Ty jsou v rámci práce prezentovány formou rozložených modelů glóbů. Měřítko bylo zvoleno jako 1\,:\,100\,000\,000.
+
+Poloměr $r$ pro toto měřítko je roven $6,38$\,cm. Na základě této hodnoty byly následně vypočteny požadované délky stran $a$ jednotlivých těles a ty byly pak upraveny, aby danému měřítku vyhovovaly. V následující tabulce (tab. č. \ref{tab:delky_stran}) jsou uvedeny délky stran $a$ pro zpracovaná tělesa v měřítku 1\,:\,100\,000\,000.
+
+\begin{table}[htbp]
+    \centering
+    \begin{tabular}{|c||c|}
+        \hline
+         & \textbf{$a$} \\
+        \hline\hline
+        dvanáctistěn & 5,73 \\
+        \hline
+        dvacetistěn & 8,44 \\
+        \hline
+    \end{tabular}
+    \caption{Délky stran v měřítku 1\,:\,100\,000\,000 pro zpracovaná tělesa. Hodnoty jsou uvedeny v cm.}
+    \label{tab:delky_stran}
+\end{table}
+
+Rozložené modely polyedrických glóbů jsou součástí odevzdávaných souborů – \texttt{model\_dvanactisten.pdf}, \texttt{model\_dvacetisten.pdf}.
+
+\subsection{Vlastnosti gnomonické projekce}
+
+Druhou část výsledků tvoří popis vlastností gnomonické projekce v okrajovém bodě $Q$ jedné ze stěn Platónského tělesa. V následující tabulce – tab. č. \ref{tab:vlastnosti_matlab} jsou uvedeny parametry gnomonické projekce ve výše uvedených bodech vypočtené programem Matlab.
+
+
+
+Získané výsledky byly porovnány s výsledky získanými ze SW Proj4. Tyto výsledky ze SW Proj4 jsou uvedeny v tabulce č. \ref{tab:vlastnosti_proj4}.
+
+\begin{table}[htbp]
+    \centering
+    \begin{tabular}{|c||c|c|}
+        \hline
+         & \textbf{dvanáctistěn} & \textbf{dvacetistěn} \\
+        \hline\hline
+        měřítko $m_p$ v poledníku & 1.583590 & 1.583590 \\
+        \hline
+        měřítko $m_r$ v rovnoběžce & 1.258410 & 1.258410 \\
+        \hline
+        poloosa $a$ & 1.583590 & 1.583590 \\
+        \hline
+        poloosa $b$ & 1.258410 & 1.258410 \\
+        \hline
+        úhel $\omega'$ mezi obrazem poledníku a rovnoběžky & $90^\circ\, 0'\, 0''$ & $90^\circ\, 0'\, 0''$ \\
+        \hline
+        maximální úhlové zkreslení $\Delta\omega$ & $13^\circ\, 8'\, 24''$ & $13^\circ\, 8'\, 24''$ \\
+        \hline
+        měřítko ploch $P$ & 1.992801 & 1.992801 \\
+        \hline
+        meridiánová konvergence $c$ & $54^\circ\, 0'\, 0''$ & $30^\circ\, 0'\, 0''$ \\
+        \hline
+    \end{tabular}
+    \caption{Výsledné vypočtené hodnoty parametrů gnomonické projekce (lokální soustava z prostředí Matlab).}
+    \label{tab:vlastnosti_matlab}
+\end{table}
+
+\begin{table}[htbp]
+    \centering
+    \begin{tabular}{|c||c|c|}
+        \hline
+         & \textbf{dvanáctistěn} & \textbf{dvacetistěn} \\
+        \hline\hline
+        měřítko $m_p$ v poledníku & 1.347082 & 1.479346 \\
+        \hline
+        měřítko $m_r$ v rovnoběžce & 1.508879 & 1.379450 \\
+        \hline
+        poloosa $a$ & 1.583590 & 1.583590 \\
+        \hline
+        poloosa $b$ & 1.258410 & 1.258410 \\
+        \hline
+        úhel $\omega'$ mezi obrazem poledníku a rovnoběžky & $78^\circ\, 38'\, 44''$ & $77^\circ\, 33'\, 50''$ \\
+        \hline
+        maximální úhlové zkreslení $\Delta\omega$ & $13^\circ\, 8'\, 24''$ & $13^\circ\, 8'\, 24''$ \\
+        \hline
+        měřítko ploch $P$ & 1.992801 & 1.992802 \\
+        \hline
+        meridiánová konvergence $c$ & $18^\circ\, 0'\, 0''$ & $30^\circ\, 0'\, 0''$ \\
+        \hline
+    \end{tabular}
+    \caption{Výsledné hodnoty parametrů gnomonické projekce získané ze SW Proj.4 (geografická soustava).}
+    \label{tab:vlastnosti_proj4}
+\end{table}
+
+Při porovnání vypočtených hodnot s hodnotami získanými z knihovny Proj.4 se ukazuje, že se hodnoty maximálního úhlového zkreslení, plošného měřítka a velikosti poloos Tissotovy indikátrix zcela shodují. Rozdíly se objevují u výpočtu délkových měřítek $m_p$ a $m_r$, úhlu $\omega'$ a v případě dvanáctistěnu i meridiánové konvergence $c$. Tento nesoulad je způsoben odlišnými vztažnými soustavami: zatímco program Matlab počítá primární měřítka podél lokální matematické sítě definované orientací plošky, kde osy splývají s hlavními směry zkreslení, proto se $m_p$ a $m_r$ rovnají poloosám $a, b$. Knihovna Proj.4 vztahuje tyto parametry striktně k celosvětové geografické síti, tedy ke skutečným poledníkům a rovnoběžkám v daném šikmém zobrazení.
+
+Posledním krokem bylo vykreslení Tissotových elips. Ty je možné vidět na obrázku č. \ref{fig:elipsy}.
+
+\begin{figure}[htbp]
+    \centering
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{dvanactisten_elipsa.png}
+    \end{minipage}\hfill
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{dvacetisten_elipsa.png}
+    \end{minipage}
+    \caption{Tissotovy elipsy pro uvedené body pro dvanáctistěn (vlevo) a dvacetistěn (vpravo). Tissotovy elipsy vykresleny v doporučeném měřítku 1\,:\,1\,000\,000.}
+    \label{fig:elipsy}
+\end{figure}
+
+
+\newpage
+{\section {Závěr}}
+Cílem této práce byla konstrukce prostorových modelů polyedrických glóbů na bázi Platónských těles a analýza jejich kartografického zkreslení. V rámci řešení byly úspěšně zkonstruovány matematické a programové modely pro vybraná tělesa, jež plní funkci polyedrické aproximace sférického povrchu Země.
+
+Hlavní část práce spočívala ve vytvoření skriptů v softwarovém prostředí Matlab. Tyto algoritmy zajistily transformaci geografických souřadnic a vykreslení sítě poledníků, rovnoběžek i pobřežních linií kontinentů v gnomonické projekci. Zásadním výstupem této části byl výpočet parametrů zkreslení v definovaných okrajových bodech těles, zahrnující stanovení délkových měřítek v hlavních směrech, plošného měřítka, maximálního úhlového zkreslení a meridiánové konvergence. Analýza deformací byla pro názornost doplněna o konstrukci Tissotových indikatrix, které vizuálně reprezentují charakter a velikost zkreslení v daných oblastech sítě.
+
+Pro ověření správnosti použitých matematických postupů byla provedena nezávislá kontrola vypočtených hodnot pomocí standardizované kartografické knihovny PROJ. 
+
+Kromě teoretických výpočtů a generování sítí byla práce zakončena přípravou finálních tiskových dat. Jednotlivé stěny těles byly uspořádány do podoby rozložených plášťů, které slouží k fyzické konstrukci polyedrických glóbů ve zvoleném měřítku. Sestavením těchto prostorových modelů byla celá úloha dokončena.
+
+V práci byly použity nástroje umělé inteligence, a to pro strukturu dokumentace práce a konzultaci vykreslování polyedrických glóbů v prostředí softwaru Matlab.
+\newpage
+
+{\section {Zdroje}}
+BAYER, Tomáš. \textit{Konstrukce glóbů na platónských tělesech, návod na cvičení} [online]. Praha: Přírodovědecká fakulta Univerzity Karlovy [cit. 2026-04-20]. Dostupné z: \url{https://web.natur.cuni.cz/~bayertom/images/courses/mmk/mmk_cv_2_navod.pdf}
+
+KOZÁK, Jan. \textit{Zobrazení Země na pravidelných mnohostěnech} [online]. Praha, 2010 [cit. 2026-04-20]. Bakalářská práce. České vysoké učení technické v Praze, Fakulta stavební. Vedoucí práce Tomáš Bayer. Dostupné z: \url{https://maps.fsv.cvut.cz/diplomky/2010_BP_Kozak_Zobrazeni_Zeme_na_pravidelnych_mnohostenech.pdf}
+
+\end{document}
