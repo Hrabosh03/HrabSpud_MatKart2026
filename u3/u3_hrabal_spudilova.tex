@@ -1,0 +1,421 @@
+\documentclass[12pt]{article}
+\usepackage[czech]{babel}
+\usepackage{graphicx}
+\usepackage{parskip}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{microtype}
+\usepackage{url}
+\usepackage{hyperref}
+\usepackage{multirow}
+
+\lstset{
+    language=Python,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue},  
+    commentstyle=\color{gray},   
+    stringstyle=\color{red},   
+    breaklines=true,             
+    frame=single,
+    captionpos=b
+}
+
+\addto\captionsczech{
+\renewcommand{\lstlistingname}{Kód}}
+\pagestyle{empty}
+\begin{document}
+
+\begin{center}
+    {\large\scshape Univerzita Karlova} \\
+    {\large\scshape Přírodovědecká fakulta} \\
+
+    \includegraphics[width=0.7\textwidth]{logo_prf}
+        
+    {\large Matematická kartografie} \\
+    
+    \vspace{2cm}
+    
+    {\Large Úloha č. 3: Srovnání konformních kartografických zobrazení pro zvolené území} \\    
+
+    \vspace{3cm}
+    
+    {\large Matěj Hrabal, Kateřina Spudilová} \\
+    {\large\scshape 1. n-gkdpz} \\
+    
+    \vfill
+    
+    {\large Praha 2026} \\
+\end{center}
+
+\newpage
+{\large\textbf{Zadání}}
+
+\begin{center}
+    \includegraphics[width=1\linewidth]{zadani1.png}
+\end{center}
+\newpage
+\underline {Údaje o bonusových úlohách}
+
+Ze zadaných kroků byly řešeny následující:
+\begin{itemize}
+    \item Exaktní výpočet dotykové rovnoběžky \emph{(válc. zobrazení)}. (+5b)   
+    \item Kartografický pól \emph{(válc. zobrazení)} s využitím analytické geometrie. (+10b)
+    \item Kartografický pól jako střed opsané kružnice s min. poloměrem \emph{(azim. zobrazení)}. (+10b)
+    \item Ekvideformáty délkového zkreslení s vhodně zvoleným krokem \emph{(x počet zobrazení)}. (+5b)
+    
+\end{itemize}
+
+\newpage
+\section{Teoretický rozbor problému}
+
+\subsection{Válcové konformní zobrazení}
+Zobrazovací rovnice Mercatorova zobrazení mají tvar
+\[
+x = c \cos d,
+\]
+\[
+y = R \cdot \ln \tan \left(\frac{s}{2} + 45^\circ\right).
+\]
+kde $c = R \cdot \cos s_0$, $s_0$ je kartografická šířka nezkreslené rovnoběžky. Za předpokladu, že zkreslení délek je na severním i jižním okraji $m_r^s = m_r^j$ a na rovníku $m_r^r$ území až na znaménko stejné
+\[
+m_r^s = m_r^j = 1 + \nu,
+\]
+\[
+m_r^r = 1 - \nu,
+\]
+je po sečtení rovnic a dosazení vzorce pro výpočet měřítka délek odvozena kartografická šířka $s_0$
+\[
+\cos s_0 = \frac{2 \cos s_s}{1 + \cos s_s}.
+\]
+Druhá nezkreslená rovnoběžka je symetrická vzhledem ke kartografickému rovníku $-s_0$.
+
+Jsou určeny dva body ortodromy představující kartografický rovník $P_1 = [u_1, v_1], P_2 = [u_2, v_2]$ a libovolný bod ležící na okrajové rovnoběžce $P_s = [u_s, v_s]$. S využitím sférického trojúhelníku a kosinové věty jsou vypočteny zeměpisné souřadnice kartografického pólu $K = [u_k, v_k]$
+\[
+\tan v_k = \frac{\tan u_1 \cos v_2 - \tan u_2 \cos v_1}{\tan u_2 \sin v_1 - \tan u_1 \sin v_2},
+\]
+\[
+\tan u_k = -\frac{\cos(v_1 - v_k)}{\tan u_1} = -\frac{\cos(v_2 - v_k)}{\tan u_2}.
+\]
+Kartografická šířka okrajové rovnoběžky $s_s$ je poté spočtena podle
+\[
+s_s = \arcsin \left[ \sin u_s \sin u_k + \cos u_s \cos u_k \cos (v_3 - v_k) \right].
+\]
+Měřítko délek $m$ lze v libovolném bodě s kartografickou šířkou $s$ určit ze vztahu
+\[
+m = m_p = m_r = \frac{\cos s_0}{\cos s},
+\]
+zkreslení délek $\nu$ jako
+\[
+\nu = m - 1.
+\]
+
+Pomocí analytické geometrie je kartografický pól válcového zobrazení $K = [u_k, v_k]$ definován jako normálový vektor k optimálně proložené rovině, která prochází počátkem souřadnicové soustavy a jejíž průnik se sférou tvoří kartografický rovník (ortodromu).
+
+\subsection{Kuželové konformní zobrazení}
+Zobrazovací rovnice Lambertova kuželového konformního zobrazení v obecné poloze mají tvar
+\[
+\rho = \rho_0 \frac{\tan^c\left(\frac{s_0}{2} + 45^\circ\right)}{\tan^c\left(\frac{s}{2} + 45^\circ\right)},
+\]
+\[
+\epsilon = c \cdot d.
+\]
+Zobrazovací rovnice obsahují dvě konstanty, $\rho_0$ a $c$, které se určují na základě podmínky, že zkreslení délek na severním i jižním okraji a ve středu území je až na znaménko stejné:
+\[
+m_r^s = m_r^j = 1 + \nu,
+\]
+\[
+m_r^0 = 1 - \nu.
+\]
+Sečtením těchto dvou rovnic a dosazením zobrazovací rovnice je získána konstanta $rho_0$ ve tvaru
+\[
+\rho_0 = \frac{2R \cos s_0 \cos s_s \tan^2\left(\frac{s_s}{2} + 45^\circ\right)}{c \left[ \cos s_0 \tan^c\left(\frac{s_0}{2} + 45^\circ\right) + \cos s_s \tan^c\left(\frac{s_s}{2} + 45^\circ\right) \right]},
+\]
+kde $s_s, s_j$ jsou kartografické šířky okrajových rovnoběžek svírající území. Pro výpočet hodnoty $s_0$ a konstanty $c$ je využito podmínky rovnosti zkreslení v okrajových rovnoběžkách. Po dosazení do vzorce pro výpočet měřítka získáme konstantu $c$
+\[
+c = \frac{\log \cos s_s - \log \cos s_j}{\log \tan \left(\frac{s_j}{2} + 45^\circ\right) - \log \tan \left(\frac{s_s}{2} + 45^\circ\right)},
+\]
+hodnota $s_0$ se poté získá ze vztahu
+\[
+\sin s_0 = c.
+\]
+Pro odvození hodnot $s_s, s_j$, které představují kartografické šířky okrajových rovnoběžek, jsou z mapového podkladu určeny souřadnice kartografického pólu $K = [u_k, v_k]$ a libovolných bodů na okrajových rovnoběžkách $P_s = [u_s, v_s], P_j = [u_j, v_j]$ . Na základě sférických trojúhelníků a využití 1. kosinové věty jsou určeny hodnoty $s_s, s_j$
+\[
+s_s = \arcsin \left[ \sin u_s \sin u_k + \cos u_s \cos u_k \cos(v_s - v_k) \right],
+\]
+\[
+s_j = \arcsin \left[ \sin u_j \sin u_k + \cos u_j \cos u_k \cos(v_j - v_k) \right].
+\]
+Hodnoty $\rho_s, \rho_j$ jsou zjištěny dosazením $s_s, s_j$ do zobrazovací rovnice pro výpočet poloměru $\rho$.
+
+Při znalosti hodnot $s_s, s_j, \rho_s, \rho_j$ jsou stanoveny délková zkreslení na severní a jižní okrajové rovnoběžce
+\[
+m = m_p = m_r = \frac{c \rho_s}{R \cdot \cos u_s} = \frac{c \rho_j}{R \cdot \cos u_j} = 1 + \nu.
+\]
+Pro ověření $m_r^0 = 1 - \nu$ jsou dosazeny $s_0, \rho_0$ do předchozího vztahu.
+
+\subsection{Azimutální konformní zobrazení}
+Zobrazovací rovnice stereografické projekce mají tvar
+\[
+\rho = c \cdot \tan \frac{\psi}{2},
+\]
+\[
+\epsilon = d,
+\]
+kde $c$ je konstanta zobrazení a $\psi = 90^\circ - u$, popřípadě $\psi = 90^\circ - s$, jsou doplněk zeměpisné (nebo kartografické) šířky do $90^\circ$ v normální (obecné) poloze. V případě, že sečná rovina protíná sféru v nezkreslené rovnoběžce $u_0$ ($s_0$), kde $\psi_0 = 90 - u_0$ ($\psi_0 = 90 - s_0$) v normální (obecné) poloze, se ze vzorce pro výpočet měřítka $m_r(\psi_0) = 1$ odvodí konstanta $c$
+\[
+c = 2R \cos^2 \left(\frac{\psi_0}{2}\right).
+\]
+Zobrazovací rovnice stereografické projekce s jednou nezkreslenou rovnoběžkou pak mají tvar
+\[
+\rho = 2R \cos^2 \frac{\psi_0}{2} \tan \frac{\psi}{2},
+\]
+\[
+\epsilon = d,
+\]
+a pro měřítko délek platí
+\[
+m_r = \frac{\cos^2 \frac{\psi_0}{2}}{\cos^2 \frac{\psi}{2}}.
+\]
+Je určen kartografický pól $K = [u_k, v_k]$ a bod na okrajové rovnoběžce $P_j = [u_j, v_j]$. S využitím sférického trojúhelníku a kosinové věty jsou vypočteny hodnoty $s_j, \psi_j$
+\[
+s_j = \arcsin \left[ \sin u_j \sin u_k + \cos u_j \cos u_k \cos(v_j - v_k) \right],
+\]
+\[
+\psi_j = 90^\circ - s_j.
+\]
+
+Pro minimalizaci vlivu zkreslení je zavedena multiplikační konstanta $\mu$. V pólu není uvažováno nulové zkreslení, nabývá hodnoty $\mu = 1 - \nu$. Pro splnění požadavku, že na okraji území bude až na znaménko stejné zkreslení $\nu$ jako na pólu, se pak nezkreslená rovnoběžka $\psi_0$ určí z výpočtu
+\[
+m_r(\psi = 0) = \frac{\cos^2 \frac{\psi_0}{2}}{\cos^2 \frac{\psi}{2}},
+\]
+\[
+\mu = \cos^2 \frac{\psi_0}{2} \Rightarrow \psi_0 = 2 \arccos \sqrt{\mu},
+\]
+kdy
+\[
+\mu = \frac{2 \cos^2 \frac{\psi_j}{2}}{1 + \cos^2 \frac{\psi_j}{2}}.
+\]
+Měřítko délek $m_r$ na okrajové jižní rovnoběžce $\psi_j$ je potom rovno
+\[
+m_r = \frac{\mu}{\cos^2 \frac{\psi_j}{2}}.
+\]
+\newpage
+\section{Vypracování}
+Jako posuzované státy byly vybrány Portugalsko jako stát s dominantním směrem (sever-jih) a Španělsko jako stát bez dominantního směru. V obou případech se jedná pouze o jejich kontinentální části. Soubory ve formátu shapefile byly staženy ze serveru GADM (GADM 2026a; 2026b) a následně upraveny v softwaru ArcGIS Pro. Hranice byly generalizovány Douglas-Peuckerovou metodou. Z hranic byl následně vygenerován textový soubor se souřadnicemi uzlů polygonu.
+
+Všechna kartografická zobrazení byla použita v obecné poloze. Parametry pro tato zobrazení byly odečteny v programu ArcGIS Pro z geometrie vytvořených pomocných prvků v tomto programu. Pro válcové zobrazení byly určeny dva body na ortodromě $P_1 = [u_1, v_1]$ a $P_2 = [u_2, v_2]$, která představuje kartografický rovník, a libovolný bod na okrajové rovnoběžce $P_s = [u_s, u_j]$. Jelikož okrajové rovnoběžky tvoří ortodromy, je ideální využít kartografické zobrazení, v němž se ortodromy zobrazují jako přímky. Tuto vlastnost má gnomonická projekce, do které byl proto transformován mapový podklad i samotné shapefily posuzovaných států. Pro návrh kartografického rovníku byla použita funkce \textit{Minimum Bounding Geometry}, která na základě vstupního parametru \textit{Geometry Type} vygeneruje daný opsaný geometrický tvar vůči vstupní vrstvě. V tomto případě byla zvolena možnost \textit{Rectangle by area} a vytvořil se tak opsaný obdélník zvoleného území. V módu \textit{Edit} byl poté tento obdélník rozdělen na dvě totožné poloviny v dominantním směru funkcí \textit{Divide} (obrázek 1). Krajní body úsečky, rozdělující tento obdélník na dvě poloviny, byly zvoleny jako body $P_1, P_2$. Jako bod $P_s$ byl zvolen jeden z dotykových bodů polygonu s obdélníkem.
+
+\begin{figure}[h]
+    \centering
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{merc_es.png}
+    \end{minipage}\hfill    
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{merc_prt.png}
+    \end{minipage}
+    
+    \caption{Určení parametrů pro válcové konformní zobrazení}
+    \label{fig:valcove}
+\end{figure}
+
+Podobný byl postup i u výběru parametrů pro azimutální zobrazení (kartografický pól $K = [u_k, v_k]$ a bod okrajové rovnoběžky $P_j = [u_j, v_j]$). Zde je ovšem z praktických důvodů ideální pracovat se zobrazením, které nezkresluje tvar kružnic, tedy s konformním zobrazením, které nezkresluje úhly. Jako kartografické zobrazení byl proto zvolen Web Mercator. Opět byla použita funkce \textit{Minimum Bounding Geometry}, ale jako \textit{Geometry Type} byla zvolena možnost \textit{Circle}, která vytvořila opsanou kružnici danému území. Ta představuje okrajovou rovnoběžku jejíž střed představuje kartografický pól (obrázek 2).
+
+\begin{figure}[h]
+    \centering
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{az_es.png}
+    \end{minipage}\hfill
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{az_prt.png}
+    \end{minipage}\hfill
+    \caption{Určení parametrů pro azimutální konformní zobrazení}
+    \label{fig:azimutalni}
+\end{figure}
+
+U kuželového zobrazení byly testovány různé varianty soustředných kružnic, které svíraly zobrazované území dvěma kartografickými rovnoběžkami (obrázek 3). Na základě tohoto postupu byly zvoleny tyto parametry: kartografický pól $K = [u_k, v_k]$ a body na okrajových rovnoběžkách $P_s = [u_s, v_s]$, $P_j = [u_j, v_j]$.
+
+\begin{figure}[h]
+    \centering
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{lcc_es.png}
+    \end{minipage}\hfill
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{lcc_prt.png}
+    \end{minipage}\hfill
+    \caption{Určení parametrů pro kuželové konformní zobrazení}
+    \label{fig:kuzelove}
+\end{figure}
+
+Výsledné parametry jsou v tabulce 1.
+
+\begin{table}[h]
+\centering
+\caption{Parametry zobrazení pro dva vybrané státy, ve stupních}
+\vspace{2mm}
+\begin{tabular}{|c|c||c|c|}
+\hline
+\multicolumn{2}{|c||}{Zobrazení} & Portugalsko & Španělsko \\
+\hline
+\multirow{3}{*}{Válcové} & $P_1$ & $[42.13^\circ, -7.65^\circ]$ & $[43.49^\circ, -2.37^\circ]$ \\
+                         & $P_2$ & $[36.98^\circ, -8.51^\circ]$ & $[36.12^\circ, -6.63^\circ]$ \\
+                         & $P_s$ & $[39.48^\circ, -9.55^\circ]$ & $[43.06^\circ, -9.30^\circ]$ \\
+\hline
+\multirow{3}{*}{Kuželové}& $K$   & $[39.37^\circ, -0.97^\circ]$ & $[15.48^\circ, -7.72^\circ]$ \\
+                         & $P_s$ & $[38.78^\circ, -9.50^\circ]$ & $[42.44^\circ, 3.17^\circ]$ \\
+                         & $P_j$ & $[40.01^\circ, -6.86^\circ]$ & $[36.00^\circ, -5.61^\circ]$ \\
+\hline
+\multirow{2}{*}{Azimutální}& $K$ & $[39.57^\circ, -7.94^\circ]$ & $[40.93^\circ, -3.17^\circ]$ \\
+                         & $P_j$ & $[36.99^\circ, -8.95^\circ]$ & $[43.06^\circ, -9.30^\circ]$ \\
+\hline
+\end{tabular}
+\label{tab:parametry}
+\end{table}
+
+Z teoretického hlediska jsou pro území protáhlého tvaru (např. Portugalsko) nejvhodnější válcová nebo kuželová zobrazení. Ekvideformáty délkového zkreslení v nich totiž sledují obrazy kartografických rovnoběžek v podobě úseček či křivek. U území bez dominantního směru se naopak preferují azimutální zobrazení, kde ekvideformáty nabývají tvaru kružnic. Cílem následující analýzy je tuto teoretickou hypotézu potvrdit, či naopak vyvrátit.
+
+\newpage
+\subsection{Algoritmy}
+Bylo vytvořeno celkem 8 skriptů v jazyce Python, a to skript pro každé zobrazení pro každý stát zvlášť a pomocný skript \textit{graticule} pro vykreslování sítě společně s ekvideformáty. Zároveň byl vytvořen skript pro výpočty bonusových úloh.
+\subsubsection*{Implementace optimálního azimutálního zobrazení}
+Výpočetní skripty pro azimutální zobrazení provádějí konformní stereografickou projekci v šikmé poloze. Jako vstupní parametry využívají určené souřadnice kartografického pólu $K(u_k, v_k)$ a nejvzdálenějšího bodu území $(u_1, v_1)$, který definuje poloměr opsané kružnice. Algoritmus nejprve transformuje souřadnice okrajového bodu do šikmé soustavy pro zisk kartografické šířky $s_j$ a jejího doplňku $\psi_j = \frac{\pi}{2} - s_j$. Pro optimalizaci zkreslení a přechod na sečné zobrazení je následně vypočtena multiplikační konstanta $\mu$ a parametr $\psi_0$ podle vztahů
+$$\mu = \frac{2 \cos^2\left(\frac{\psi_j}{2}\right)}{1 + \cos^2\left(\frac{\psi_j}{2}\right)}$$
+a
+$$\psi_0 = 2 \arccos(\sqrt{\mu}).$$
+Z těchto hodnot algoritmus vyhodnocuje měřítko v pólu zobrazení a na okraji území, ze kterých je odvozeno výsledné plošné a délkové zkreslení. Z hlediska vizualizace skript zajišťuje transformaci geografických souřadnic $(u, v)$ na kartézské $(X, Y)$ a aplikuje rotační matici, aby byl centrální poledník orientován svisle k severu. Finální grafický výstup, generovaný pomocí knihovny Matplotlib, vizualizuje obrysy státu se sítí poledníků a rovnoběžek včetně izolinií zkreslení s definovaným krokem.
+
+\subsubsection*{Implementace optimálního kuželového zobrazení}
+Skripty pro kuželové zobrazení modelují Lambertovu konformní kuželovou projekci v šikmé poloze. Vstupními parametry jsou souřadnice optimalizovaného kartografického pólu a dvou referenčních bodů, které definují vnitřní a vnější okrajovou rovnoběžku mapovaného pásu. Jádrem výpočtu je stanovení konstanty kužele $c$, jež určuje míru jeho rozevření, a výpočet základní nezkreslené rovnoběžky $s_0$ na základě transformovaných kartografických šířek $s_1$ a $s_2$ hraničních bodů. Tyto parametry jsou dány vztahy
+$$c = \frac{\log(\cos s_1) - \log(\cos s_2)}{\log\left(\tan\left(\frac{s_2}{2} + \frac{\pi}{4}\right)\right) - \log\left(\tan\left(\frac{s_1}{2} + \frac{\pi}{4}\right)\right)}$$
+a
+$$s_0 = \arcsin(c).$$
+Algoritmus dále počítá poloměry příslušných rovnoběžek $\rho_0, \rho_1, \rho_2$ a z nich vyplývající lokální měřítka a extrémy zkreslení. Podobně jako u azimutálního zobrazení je pro finální vizualizaci nutné aplikovat výpočet azimutu natočení, čímž je zaručena správná severojižní orientace výsledné mapy v kartézském souřadnicovém systému před jejím finálním vykreslením.
+
+\subsubsection*{Implementace optimálního válcového zobrazení}
+Pro válcové zobrazení je ve skriptech využita šikmá konformní Mercatorova projekce. K určení kartografického rovníku algoritmus využívá dvojici definovaných okrajových bodů. 
+V případě skriptu válcového zobrazení je řešen případ nespojitosti v kartografické délce, označované jako wrap-around efekt. Toto řešení je zajištěno speciální funkcí, která pomocí operace modulo (přičítáním a odčítáním periody $2\pi$) brání nežádoucímu roztržení polygonu státu či izolinií při přechodu přes okraj mapového listu. Celý postup je ukončen rotací souřadnic do severní orientace.
+
+\subsubsection*{Pomocný skript graticule.py}
+
+Za účelem zamezení duplicitního kódu ve skriptech pro jednotlivá zobrazení a pro celkové zpřehlednění práce byl vytvořen sdílený skript \texttt{graticule.py}. Ten slouží jako pomocná výpočetní knihovna, ze které jsou v hlavních skriptech volány příslušné matematické funkce.
+
+Základem je funkce \texttt{uv\_to\_sd}, pomocí které je realizována transformace standardních zeměpisných souřadnic ($u, v$) do šikmé kartografické soustavy ($s, d$). K samotnému výpočtu jsou využívány souřadnice kartografického pólu a standardní vzorce ze sférické trigonometrie.
+
+Dále byly v modulu definovány tři samostatné funkce pro výpočet konkrétních kartografických zobrazení – \texttt{mercator} (válcové), \texttt{azimuthal} (azimutální) a \texttt{lcc} (kuželové). Do těchto funkcí vstupují již transformované souřadnice společně s parametry příslušného zobrazení (například sečná rovnoběžka $s_0$).
+
+Výstupem těchto funkcí jsou přepočítané rovinné pravoúhlé souřadnice $X, Y$ a k nim příslušné lokální délkové zkreslení. Toto zkreslení je počítáno ze standardního vztahu jako rozdíl lokálního měřítka a hodnoty 1, přičemž je v rámci funkce rovnou násobeno konstantou 1000. Tím je dosaženo praktičtějších hodnot vyjádřených v metrech na kilometr ($m/km$), což následně značně usnadňuje a sjednocuje proces generování a vykreslování izolinií v hlavních skriptech.
+
+\subsection*{Bonusy}
+\subsubsection*{Kartografický pól válcového zobrazení}
+Pro nalezení optimální roviny a její normály byl využit algoritmus založený na metodě nejmenších čtverců. V prvním kroku byly zeměpisné souřadnice hraničních bodů státu $(u, v)$ převedeny na 3D kartézské souřadnice na jednotkové kouli pomocí transformačních vztahů $x = \cos(u)\cos(v)$, $y = \cos(u)\sin(v)$ a $z = \sin(u)$. Z těchto bodů byla následně sestavena matice $A$, která reprezentuje mračno bodů na povrchu sféry. K nalezení optimální roviny procházející počátkem $(0, 0, 0)$, která minimalizuje kolmé vzdálenosti jednotlivých bodů od této roviny, byl aplikován singulární rozklad matice. Hledaný normálový vektor této roviny $(n_x, n_y, n_z)$ pak přímo odpovídá pravému singulárnímu vektoru příslušejícímu nejmenší singulární hodnotě z tohoto rozkladu. V posledním kroku byl získaný normálový vektor, představující kartografický pól, převeden zpět do sférické soustavy na souřadnice $u_k$ a $v_k$ pomocí inverzních vztahů $u_k = \arcsin(n_z)$ a $v_k = \operatorname{arctan2}(n_y, n_x)$. 
+\subsubsection*{Dotyková rovnoběžka válcového zobrazení}
+Do samotného výpočtu nejprve vstupují exaktní souřadnice kartografického pólu $K(u_k, v_k)$, které byly získány z předchozí optimalizace pomocí singulárního rozkladu matice. Následně je pro každý hraniční bod $(u_i, v_i)$ zájmového území určena jeho kartografická šířka $s_i$, která představuje úhlovou vzdálenost od kartografického rovníku. Tento výpočet využívá základních vztahů sférické trigonometrie a je definován rovnicí
+$$s_i = \arcsin(\sin u_i \sin u_k + \cos u_i \cos u_k \cos(v_i - v_k)).$$
+Z takto získaného pole hodnot je posléze algoritmicky vybrána absolutně největší hodnota, která definuje šířku svírajícího pásu daného území, tedy $s_{max} = \max(|s_i|)$. Tato nalezená extrémní hodnota je v posledním kroku dosazena do teoretického vzorce pro výpočet exaktní nezkreslené rovnoběžky $s_0$.
+\subsubsection*{Kartografický pól azimutálního zobrazení}
+Protože střed minimální opsané kružnice na sféře nelze jednoduše určit pomocí uzavřeného analytického vztahu, byl pro jeho výpočet použit postup založený na numerické optimalizaci. V prvním kroku byla definována účelová funkce, která pro libovolný zkusmý pól $(u_k, v_k)$ vypočítá sférické vzdálenosti ke všem hraničním bodům zájmového území $(u_i, v_i)$ na základě sférické kosinové věty. Z těchto hodnot pak funkce vrací tu absolutně největší, která představuje poloměr aktuálně uvažované opsané kružnice. Jako počáteční odhad a výchozí bod pro iteraci bylo zvoleno geografické těžiště (aritmetický průměr souřadnic) zadaných hraničních bodů. Pro samotnou minimalizaci navržené účelové funkce byl následně aplikován Nelder-Meadův simplexový algoritmus, dostupný v rámci knihovny scipy.optimize. Tento algoritmus iterativně optimalizoval polohu zkusmého pólu na povrchu sféry tak dlouho, dokud nebylo dosaženo minima – tedy stavu, kdy je nejvzdálenější bod státu k pólu co možná nejblíže. 
+\newpage
+\section{Výsledky}
+\subsubsection*{Celkové zhodnocení a analýza zkreslení}
+
+V této části jsou prezentovány finální výsledky optimalizace. Vypočtené extrémní hodnoty délkového zkreslení pro jednotlivá zobrazení a státy jsou shrnuty v tabulce 2. Tyto hodnoty jsou uváděny jako bezrozměrné veličiny $\Delta m$ (kde $\Delta m = m - 1$). Vizuální reprezentace optimalizovaných zobrazení včetně ekvideformát, je pak zachycena na obrázcích 4, 5 a 6.
+
+Z hodnot v tabulce 2 je na první pohled patrný výrazný rozdíl mezi oběma analyzovanými státy. Portugalsko vykazuje obecně o jeden až dva řády nižší hodnoty zkreslení než Španělsko. Tento nepoměr je důsledkem menší plošné rozlohy a především užšího tvaru Portugalska, díky kterému leží všechny jeho hraniční body mnohem blíže k optimálním nezkresleným plochám (rovníku, rovnoběžkám či pólu) než v případě rozlehlejšího Španělska.
+
+Při analýze Španělska se jako matematicky nejvýhodnější ukázalo zobrazení azimutální, kde extrémní hodnoty zkreslení dosahují nejnižší hodnoty $\pm 0.960452$. Kuželové zobrazení představuje střední cestu s hodnotou $\pm 1.200542$ a jako nejméně vhodné dopadlo zobrazení válcové s hodnotou $\pm 1.526788$. Tyto výsledky potvrzují fakt, že Španělsko má poměrně pravidelný, kruhovitý tvar a chybí mu jasně vymezená delší osa. Pro takto rozložené území je geometricky nejideálnější právě tečná rovina azimutálního zobrazení, u níž zkreslení roste rovnoměrně do všech směrů od centrálního pólu umístěného uprostřed státu.
+
+U Portugalska je situace zcela odlišná. Nejhůře zde dopadlo zobrazení azimutální s nejvyšší hodnotou zkreslení $\pm 0.276240$. Naopak nejlepších výsledků bylo dosaženo u kuželového zobrazení s hodnotou $\pm 0.081548$, následováno válcovým zobrazením s hodnotou $\pm 0.092991$. Tato čísla reflektují protáhlý severojižní tvar státu s mírným zakřivením pobřeží, pro který je vhodnější práve válcové či kuželové zobrazení. 
+\begin{figure}[h]
+    \centering
+    \begin{minipage}{0.50\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{merc_es_final.png}
+    \end{minipage}\hfill
+    \begin{minipage}{0.50\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{merc_prt_final.png}
+    \end{minipage}\hfill
+    \caption{Válcové konformní zobrazení - Španělsko (vlevo) a Portugalsko (vpravo)}
+    \label{fig:valcove}
+\end{figure}
+\begin{figure}[h]
+    \centering
+    \begin{minipage}{0.50\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{az_es_final.png}
+    \end{minipage}\hfill
+    \begin{minipage}{0.50\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{az_prt_final.png}
+    \end{minipage}\hfill
+    \caption{Azimutální konformní zobrazení - Španělsko (vlevo) a Portugalsko (vpravo)}
+    \label{fig:azimutalni}
+\end{figure}
+\begin{figure}[h]
+    \centering
+    \begin{minipage}{0.50\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{lcc_es_final.png}
+    \end{minipage}\hfill
+    \begin{minipage}{0.50\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{lcc_prt_final.png}
+    \end{minipage}\hfill
+    \caption{Kuželové konformní zobrazení - Španělsko (vlevo) a Portugalsko (vpravo)}
+    \label{fig:kuzelove}
+\end{figure}
+\begin{table}[h]
+\centering
+\caption{Hodnoty maximálního zkreslení pro jednotlivé státy za jednotlivá zobrazení, zaokrouhleno na 1E-6}
+\vspace{2mm}
+\begin{tabular}{|c|c|c|}
+\hline
+Zobrazení & Španělsko & Portugalsko \\
+\hline
+Válcové & $\pm$ 1.526788 & $\pm$ 0.092991 \\
+\hline
+Kuželové & $\pm$ 1.200542 & $\pm$ 0.081548 \\
+\hline
+Azimutální & $\pm$ 0.960452 & $\pm$ 0.276240 \\
+\hline
+\end{tabular}
+\label{tab:zkresleni}
+\end{table}
+
+\subsubsection*{Hodnoty exaktních parametrů zobrazení}
+
+V rámci řešení doplňujících úloh byly výpočetními algoritmy stanoveny exaktní určující parametry pro válcové a azimutální zobrazení. Pro šikmé válcové zobrazení byl pomocí singulárního rozkladu matic určen optimální kartografický pól, který pro Španělsko nabývá souřadnic $u_k = 45.672328^\circ$ a $v_k = 149.415422^\circ$. V případě Portugalska byl tento pól vypočten na souřadnicích $u_k = 7.947650^\circ$ a $v_k = -104.637768^\circ$.
+
+Z těchto pólů byla následně odvozena maximální kartografická šířka svírajícího pásu $s_{max}$. Pro Španělsko činí tato hodnota $5.277399^\circ$, z čehož byla analyticky vypočtena exaktní poloha sečné rovnoběžky $s_0 = 3.734987^\circ$. Užší profil Portugalska se projevuje odlišnou šířkou pásu pouhých $1.079094^\circ$, pro kterou odpovídající sečná rovnoběžka nabývá hodnoty $0.763063^\circ$.
+
+V případě azimutálního zobrazení byl výpočet zaměřen na určení středu minimální opsané kružnice. Aplikací Nelder-Meadovy numerické optimalizace byly tyto kartografické póly nalezeny. Pro Španělsko leží nalezený střed na souřadnicích $u_k = 40.740779^\circ$ a $v_k = -3.173445^\circ$, zatímco optimální pól pro Portugalsko se nachází na souřadnicích $u_k = 39.521957^\circ$ a $v_k = -7.954453^\circ$.
+\clearpage
+\section{Závěr}
+
+Cílem práce bylo navrhnout a algoritmicky vyhodnotit optimální konformní zobrazení (válcové, kuželové a azimutální) pro území Španělska a Portugalska. Vstupní parametry pro obecnou polohu zobrazení byly primárně odvozeny v prostředí ArcGIS Pro s využitím nástroje Minimum Bounding Geometry. Tento grafický odhad byl následně v rámci bonusových úloh úspěšně verifikován a doplněn o exaktní analytické metody, jako je využití singulárního rozkladu matic pro proložení optimální roviny či numerická optimalizace minimální opsané kružnice.
+
+Dosažené výsledky jednoznačně potvrdily vliv tvaru a rozlohy území na volbu vhodného zobrazení. Pro Portugalsko, vyznačující se dominantním severojižním směrem, se jako nejvýhodnější ukázalo zobrazení kuželové velmi těsně následované válcovým. Naopak pro Španělsko bez dominantního směru dopadlo nejlépe zobrazení azimutální, u nějž zkreslení roste rovnoměrně do všech směrů od pólu. 
+
+Celková analýza ukázala, že díky menší rozloze a příznivějšímu protáhlému tvaru vykazuje Portugalsko ve všech zobrazeních o jeden až dva řády nižší absolutní hodnoty délkového zkreslení než rozlehlejší Španělsko. Propojení grafického návrhu v softwaru ArcGIS Pro s následným algoritmickým zpracováním v jazyce Python se tak ukázalo jako účinný postup pro objektivní vyhodnocení a minimalizaci zkreslení navrhovaných mapových děl.
+
+V práci byly použity nástroje umělé inteligence, a to pro strukturu dokumentace práce a konzultaci vykreslování výsledných zobrazení s ekvideformáty pomocí knihovny Matplotlib.
+\newpage
+\section{Zdroje}
+BAYER, Tomáš. \textit{Přednášky předmětu Matematická kartografie} [online]. Praha: Přírodovědecká fakulta Univerzity Karlovy. 2026a [cit. 2026-05-07]. Dostupné z: \url{https://web.natur.cuni.cz/~bayertom/index.php/teaching/matematicka-kartografie}
+
+BAYER, Tomáš. \textit{Srovnání konformních kartografických zobrazení pro zvolené
+území (návod na cvičení)} [online]. Praha: Přírodovědecká fakulta Univerzity Karlovy. 2026b [cit. 2026-04-28]. Dostupné z: \url{https://web.natur.cuni.cz/~bayertom/images/courses/mmk/mmk_cv_4_navod.pdf}
+
+GADM. \textit{Portugalsko -- shapefile} [online]. 2026a [cit. 2026-04-28]. Dostupné z: \url{https://gadm.org/download_country.html}
+
+GADM. \textit{Španělsko -- shapefile} [online]. 2026b [cit. 2026-04-28]. Dostupné z: \url{https://gadm.org/download_country.html}
+
+SciPy Developers. \textit{scipy.optimize.minimize(method='Nelder-Mead')} [online]. 2026 [cit. 2026-05-07]. Dostupné z: \url{https://docs.scipy.org/doc/scipy/reference/optimize.minimize-neldermead.html}
+\end{document}
