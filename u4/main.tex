@@ -1,0 +1,235 @@
+\documentclass[12pt]{article}
+\usepackage[czech]{babel}
+\usepackage{graphicx}
+\usepackage{parskip}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{microtype}
+\usepackage[table,xcdraw]{xcolor}
+
+\lstset{
+    language=Python,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue},  
+    commentstyle=\color{gray},   
+    stringstyle=\color{red},   
+    breaklines=true,             
+    frame=single,
+    captionpos=b
+}
+
+\addto\captionsczech{
+\renewcommand{\lstlistingname}{Kód}}
+\pagestyle{empty}
+
+\begin{document}
+
+\begin{center}
+    {\large\scshape Univerzita Karlova} \\
+    {\large\scshape Přírodovědecká fakulta} \\
+
+    \includegraphics[width=0.7\textwidth]{logo_prf}
+        
+    {\large Matematická kartografie} \\
+    
+    \vspace{2cm}
+    
+    {\Large Úloha č. 4: Hodnocení kartografických zobrazení s využitím variačních kritérií} \\    
+
+    \vspace{3cm}
+    
+    {\large Matěj Hrabal, Kateřina Spudilová} \\
+    {\large\scshape 1. n-gkdpz} \\
+    
+    \vfill
+    
+    {\large Praha 2026} \\
+\end{center}
+
+\newpage
+{\large\textbf{1 Zadání}}
+
+\begin{center}
+    \includegraphics[width=1\linewidth]{zadani.png}
+\end{center}
+
+\newpage
+\underline {Údaje o bonusových úlohách}
+
+\begin{center}
+    \includegraphics[width=1\linewidth]{bonusy.png}
+\end{center}
+
+Ze zadaných kroků byly řešeny následující:
+\begin{itemize}
+    \item Hodnocení kartograf. zobrazení s využitím variačních kritérií (20b)
+    \item Vážená varianta kritérií (+5b)
+    \item Další hodnocené kartografické zobrazení. (+5b)
+\end{itemize}
+
+\newpage
+{\large \textbf {2 Teoretický rozbor problému}}
+
+\textbf{2.1 Variační kritéria}
+
+Při výběru vhodného kartografického zobrazení pro větší území (např. kontinenty či planisféru) se pouhá analýza hodnot zkreslení na okrajích mapového pole stává nedostatečnou. Je proto nutné provést komplexní hodnocení celkové věrnosti zákresu nad celým zájmovým územím, a to ve vztahu k délkám, úhlům i plochám. Pro tyto účely se v kartografii využívají variační kritéria. Ta umožňují kvantifikovat celkovou úroveň deformace zobrazení do jedné reprezentativní hodnoty. Takto pak lze objektivně porovnávat různá zobrazení mezi sebou. Z těchto porovnání vychází obecně nejlépe zobrazení vyrovnávací, která sice mírně zkreslují všechny charakteristiky, ale v žádné z nich nedosahují extrémních hodnot.
+
+Výpočet variačních kritérií pro určitý bod $P = [u, v]$ vychází z poloos $a, b$ Tissotovy elipsy. Tyto hodnoty reprezentují extrémní délková zkreslení v analyzovaném bodě. Na jejich základě se definují tzv. lokální variační kritéria $h^2(u,v)$, která kvantifikují míru deformace v jednom konkrétním uzlu geografické sítě.
+
+\textbf{2.1.1 Airyho kritérium}
+
+Airyho kritérium zohledňuje primárně vliv délkového zkreslení, avšak nebere v potaz zkreslení úhlové. Jeho matematický výpočet tedy je:
+$$h^2(u,v)=\frac{1}{2}[(a-1)^2+(b-1)^2]$$
+
+\textbf{2.1.2 Komplexní kritérium}
+
+Pro získání ucelenějšího pohledu se využívá komplexní kritérium, které zavedením členu $a/b$ kombinuje vliv délkového i úhlového zkreslení do jedné rovnice:
+$$h^2(u,v)=\frac{1}{2}[|a-1|+|b-1|]+\frac{a}{b}-1$$
+
+\textbf{2.1.3 Globální kritérium}
+
+Zatímco lokální kritérium popisuje stav deformace v jednom bodě, cílem prostorové analýzy je získat globální variační kritérium $H^2$. Globální variační kritérium $H^2$ nad vymezenou oblastí $\Omega$ představuje střední hodnotu lokálního kritéria. Teoreticky je definováno jako podíl integrálu lokálního kritéria a plochy území. Pro oblast vymezenou rovnoběžkami $u_1, u_2$ a poledníky $v_1, v_2$ lze globální kritérium vyjádřit ve tvaru:
+
+$$H^2=\frac{1}{(u_2-u_1)(v_2-v_1)}\int_{u_1}^{u_2}\int_{v_2}^{v_2}h^2 \cos u \, du \, dv$$
+
+\newpage
+V praxi se integrální tvary nahrazují diskrétními vztahy, kdy je zájmové území pokryto sítí uzlových bodů (zpravidla s krokem $\Delta u = \Delta v = 10^{\circ}$). Výsledná hodnota je pak určena jako průměr hodnot lokálních kritérií v těchto bodech.
+
+$$H_1^2 = \frac{1}{n} \sum_{i=1}^{n} h^2(u_i, v_i)$$
+
+Pro potlačení vlivu polárních oblastí, kde se poledníky sbíhají a hustota bodů mřížky na jednotku plochy roste, se používá vážený průměr. Váha bodu $p_i = \cos u_i$ je funkcí zeměpisné šířky:
+
+$$H_2^2 = \frac{\sum_{i=1}^{n} p_i h^2(u_i, v_i)}{\sum_{i=1}^{n} p_i}$$
+
+\textbf{2.2 Analyzovaná kartografická zobrazení}
+
+\textbf{2.2.1 Bonneovo}
+
+Bonneovo zobrazení spadá do kategorie nepravých kuželových plochojevných zobrazení. Jeho konstrukce je charakteristická tím, že rovnoběžky mají tvar soustředných kruhových oblouků, zatímco poledníky jsou zobrazeny jako složité křivky symetricky se sbíhající ke střednímu poledníku. Historicky bylo toto zobrazení velmi populární v 19. a na počátku 20. století, kdy se často využívalo pro topografické mapování jednotlivých států i pro mapy rozsáhlých kontinentů. V současné době se od jeho používání spíše upouští, protože směrem k okrajům mapového pole dochází k výraznému zkreslení úhlů a tvarů, což jej činí nevhodným pro zobrazení celé planisféry.
+
+\textbf{2.2.2 Mercator-Sansonovo}
+
+Jedná se o nepravé válcové plochojevné zobrazení, které je často označováno jako zobrazení sinusové. Rovník a střední poledník se v něm zobrazují jako na sebe kolmé přímky, přičemž všechny ostatní rovnoběžky zůstávají přímkové, ale poledníky nabývají tvaru sinusoid. Zachovává věrné délky podél všech rovnoběžek a středního poledníku, avšak s rostoucí vzdáleností od středu se extrémně zvyšuje úhlová deformace. Typicky se proto využívá pro mapování oblastí ležících v blízkosti rovníku.
+
+\textbf{2.2.3 Eckertovo V.}
+
+Toto zobrazení je jedním z šesti nepravých válcových zobrazení, která na počátku 20. století navrhl německý kartograf Max Eckert. Eckertovo V. zobrazení je vyrovnávací - nedisponuje tedy ani plochojevnou, ani konformní vlastností, ale snaží se rozložit obě formy zkreslení napříč celou mapou. Vyznačuje se tím, že póly nejsou zobrazeny jako body, ale jako úsečky, jejichž výsledná délka odpovídá polovině délky zobrazeného rovníku.
+
+\newpage
+\textbf{2.2.4 Winkel-Tripel}
+
+Jde o moderní vyrovnávací zobrazení, které bylo navrženo s cílem minimalizovat tři hlavní kartografická zkreslení současně. Vzniklo matematickým zprůměrováním souřadnic bodů z válcového ekvidistantního zobrazení a nepravého Aitoffova zobrazení. Díky příznivému rozložení deformací nedochází k extrémnímu protažení polárních oblastí, které je jinak typické pro válcové projekce. V roce 1998 jej americká organizace National Geographic Society přijala jako svůj standard pro mapy světa.
+
+\textbf{2.2.5 Hammer-Aitoffovo}
+
+Hammerovo zobrazení je nepravé azimutální plochojevné zobrazení, které modifikuje původní Aitoffův návrh tak, aby byla plně zachována ekvivalence ploch. Celá zemská sféra je v něm transformována do ohraničující elipsy, jejíž hlavní poloosa ležící na rovníku je dvakrát delší než vedlejší poloosa tvořená středním poledníkem. Na rozdíl od jiných globálních zobrazení si udržuje mírné úhlové zkreslení i ve středních a vyšších zeměpisných šířkách.
+
+\textbf{2.2.6 Lambertovo konformní kuželové (LCC)}
+
+LCC bylo poprvé publikováno Johannem Heinrichem Lambertem v roce 1772. Jedná se o konformní projekci, která v každém bodě zachovává věrnost úhlů a tvarů malých územních celků, což v matematickém vyjádření odpovídá rovnosti poloos Tissotovy indikatrix ($a=b$). Díky schopnosti zobrazovat území v mírných šířkách protažená ve směru východ–západ se stalo standardem pro topografické mapy středních měřítek a mezinárodní letecké navigační mapy.
+
+\newpage
+{\large \textbf {3 Data}}
+
+Analýzy proběhly nad územím států Evropské unie. Potřebná data byla stažena ve formátu SHP ze stránek GISCO (Geographic Information System of the Commission), které poskytují oficiální prostorová data EU. Dále byla pozměněna odstraněním území, která jsou značně vzdálena od kontinentální Evropy - např. ostrov Réunion. Polygonová vrstva byla následně v softwaru ArcGIS Pro převedena do potřebného formátu, tedy do série uzlových bodů ve formátu TXT. 
+
+{\large \textbf {4 Popis algoritmu}}
+
+Pro kvantifikaci a vizualizaci deformačních vlastností kartografických zobrazení byl navržen výpočetní skript v jazyce Python, a to za použití knihoven \texttt{numpy}, \texttt{pyproj}, \texttt{matplotlib}.
+
+Jádrem algoritmu je funkce \texttt{project()}, která slouží k transformaci souřadnic a k výpočtu deformací. Uvnitř této funkce je nejprve vytvořena instance kartografického zobrazení voláním třídy \texttt{Proj}. Této třídě jsou předány nezbytné parametry: identifikátor zobrazení (např. \texttt{proj="bonne"}), poloměr referenční koule $R$ a parametry pro správné středění zobrazení nad Evropou (\texttt{lat\_1, lat\_0, lon\_0}).
+
+Projekce sférických souřadnic do roviny probíhá zavoláním vytvořeného objektu \texttt{my\_proj(lon, lat)}. Zásadní je pro výpočet variačních kritérií využití metody \texttt{get\_factors(lon, lat)}, která pro danou mřížku bodů odvodí deformační parametry. Z vráceného objektu jsou následně extrahovány vlastnosti \texttt{tissot\_semimajor} (hlavní poloosa $a$) a \texttt{tissot\_semiminor} (vedlejší poloosa $b$) do podoby samostatných matic.
+
+Ve funkci \texttt{graticule()}, která slouží ke konstrukci poledníků a rovnoběžek, jsou pomocí metody \texttt{arange()} vygenerovány vektory s definovaným úhlovým krokem (\texttt{Dlat, Dlon} pro hlavní síť a jemnější \texttt{dlat, dlon} pro plynulé zakřivení linií). Základní výpočetní prostor pro plošnou analýzu států EU je vytvořen pomocí metody \texttt{linspace()}, která vygeneruje vektory 100 rovnoměrně rozložených hodnot mezi hraničními souřadnicemi \texttt{lat\_min} a \texttt{lat\_max}. Tyto 1D vektory jsou následně pomocí metody \texttt{meshgrid()} transformovány do 2D matic \texttt{latg} a \texttt{long}.
+
+Získané matice poloos $a$ a $b$ jsou zpracovány do podoby lokálních kritérií \texttt{h2\_a} (Airyho) a \texttt{h2\_c} (komplexní). Pro získání globálních kritérií jsou využity agregační funkce. Nevážená varianta je získána voláním metody \texttt{mean()} nad maticemi lokálních kritérií. U vážené varianty je nejprve definována matice vah $w$ pomocí goniometrické funkce $cos()$, do které vstupují zeměpisné šířky. Následně je aplikován vzorec pro vážený průměr s využitím metody \texttt{sum()} aplikované na součin váhy a lokálního kritéria, jež je vydělen sumou všech vah \texttt{(sum(w*h2\_a)/sum(w))}.
+
+\newpage
+{\large \textbf {5 Výsledky}}
+\begin{figure}[h!]
+  \centering
+  \begin{minipage}{0.4\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{bonne.png}
+    \caption{Bonneovo}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.4\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{mercsans.png}
+    \caption{Mercator-Sansonovo}
+  \end{minipage}
+
+  \vspace{1em}
+
+  \begin{minipage}{0.4\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{eck5.png}
+    \caption{Eckertovo V.}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.4\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{wintri.png}
+    \caption{Winkel-Tripel}
+  \end{minipage}
+
+  \vspace{1em}
+
+  \begin{minipage}{0.4\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{hammer.png}
+    \caption{Hammerovo}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.4\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{lcc.png}
+    \caption{LCC}
+  \end{minipage}
+\end{figure}
+
+\newpage
+\begin{table}[h!]
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+\multicolumn{1}{|c|}{\textbf{zobrazení}} &
+  \textbf{nevážené Airyho} &
+  \textbf{nevážené komplexní} &
+  \textbf{vážené Airyho} &
+  \textbf{vážené komplexní} \\ \hline
+Bonneovo           & 0,0003 & 0,0367 & 0,0002 & 0,0336 \\ \hline
+Mercator-Sansonovo & 0,0096 & 0,2692 & 0,0089 & 0,2583 \\ \hline
+Eckertovo V.       & 0,0687 & 0,6207 & 0,0489 & 0,5239 \\ \hline
+Winkel-Tripel      & 0,0390 & 0,3274 & 0,0263 & 0,2620 \\ \hline
+Hammer-Aitoffovo   & 0,0229 & 0,4700 & 0,0189 & 0,4219 \\ \hline
+LCC                & 0,0012 & 0,0230 & 0,0008 & 0,0188 \\ \hline
+\end{tabular}%
+}
+\caption{Výsledné hodnoty variačních kritérií}
+\end{table}
+
+U všech hodnocených zobrazení lze pozorovat systematický pokles hodnot u vážených variant kritérií oproti variantám neváženým. Území Evropy se nachází ve středních a vyšších zeměpisných šířkách, kde dochází k výrazné sbíhavosti poledníků. Při výpočtu nad pravidelnou úhlovou mřížkou by bez zavedení váhového koeficientu docházelo k neúměrnému nadhodnocování uzlů v severních oblastech, které na referenční kouli reálně reprezentují podstatně menší plochu než uzly v jižnějších šířkách. Vážená kritéria tak poskytují přesnější a objektivnější obraz o celkové míře deformace.
+
+Výsledky rovněž zachycují nevhodnost použití globálních zobrazení (Eckertovo V., Winkel-Tripel, Hammer-Aitoffovo) pro regionální mapování. Vzhledem k tomu, že tato zobrazení jsou optimalizována pro rozložení zkreslení přes celou planisféru, vykazují ve výřezu Evropy nejvyšší hodnoty deformací.
+
+Na základě kvantitativního zhodnocení je pro znázornění států EU nejvhodnější Lambertovo konformní kuželové zobrazení (LCC). Ačkoliv Bonneovo zobrazení dosahuje absolutního minima ve váženém Airyho kritériu ($0,0002$), LCC vykazuje nejnižší hodnotu u váženého komplexního kritéria ($0,0188$). Tohoto výsledku je dosaženo díky konformní podstatě LCC zobrazení, které na rozdíl od nepravého kuželového Bonneova netrpí nárůstem úhlové deformace v okrajových částech zájmového území. Pokud jsou parametry zobrazení vhodně definovány pro střed Evropy (v tomto případě rovnoběžka $50^\circ$ s. š. a základní poledník $15^\circ$ v. d.), plošné zkreslení u LCC nestihne v rámci vymezeného polygonu narůst do takové míry, aby znehodnotilo výhodu jeho tvarové a úhlové věrnosti. Bonneovo zobrazení sice dokáže v centrálním pásu kolem standardní rovnoběžky udržet délkové zkreslení na zanedbatelné úrovni a zachovat plochojevnost, s rostoucí excentricitou však jeho deformační vlastnosti v hodnocení komplexním kritériem selhávají.
+
+Z posuzovaných metrik nejlépe vystihuje celkové vlastnosti kartografického zobrazení vážené komplexní kritérium. Airyho kritérium ($H^2_a$) analyzuje pouze součet čtverců odchylek poloos Tissotovy indikatrix od jednotkové hodnoty. Zásadní nevýhodou tohoto přístupu je neschopnost penalizovat porušení konformity, tedy nárůst úhlového zkreslení. Tento nedostatek v analýze prokazuje Mercator-Sansonovo zobrazení. Dle váženého Airyho kritéria ($0,0089$) by se jevilo jako vyhovující, doopravdy však toto zobrazení vykazuje s rostoucí vzdáleností od středního poledníku extrémní úhlovou deformaci, jež okrajové části Evropy vizuálně i metricky silně znehodnocuje. Komplexní kritérium tento problém eliminuje tím, že do své rovnice integruje poměr poloos $a/b$. Tento člen kvantifikuje míru úhlové deformace v daném uzlu. Vážené komplexní kritérium tak poskytuje nejrobustnější model pro evaluaci kartografických zobrazení, neboť kombinuje vliv délkového, plošného i úhlového zkreslení.
+
+\newpage
+{\large \textbf {Zdroje}}
+
+BAYER, T. (2026): Hodnocení zobrazení dle variačních kritérií, návod na cvičení. Přírodovědecká fakulta UK, Praha.
+
+EUROSTAT (2026): Countries – GISCO – Eurostat. \\ https://ec.europa.eu/eurostat/web/gisco/geodata/administrative-units/countries \\
+(cit. 16. 5. 2026).
+
+SNYDER, J. P. (1987): Map projections: A working manual. U.S. Geological Survey Professional Paper 1395. U.S. Geological Survey, Washington, 385 pp.
+
+
+\end{document}
