@@ -1,0 +1,229 @@
+\documentclass[12pt]{article}
+\usepackage[czech]{babel}
+\usepackage{graphicx}
+\usepackage{parskip}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{microtype}
+\usepackage{url}
+\usepackage{hyperref}
+\usepackage{multirow}
+
+\lstset{
+    language=Python,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue},  
+    commentstyle=\color{gray},   
+    stringstyle=\color{red},   
+    breaklines=true,             
+    frame=single,
+    captionpos=b
+}
+
+\addto\captionsczech{
+\renewcommand{\lstlistingname}{Kód}}
+\pagestyle{empty}
+\begin{document}
+
+\begin{center}
+    {\large\scshape Univerzita Karlova} \\
+    {\large\scshape Přírodovědecká fakulta} \\
+
+    \includegraphics[width=0.7\textwidth]{logo_prf}
+        
+    {\large Matematická kartografie} \\
+    
+    \vspace{2cm}
+    
+    {\Large Úloha č. 1: Výpočet souřadnic bodů v rovině Křovákova zobrazení} \\    
+
+    \vspace{3cm}
+    
+    {\large Matěj Hrabal, Kateřina Spudilová} \\
+    {\large\scshape 1. n-gkdpz} \\
+    
+    \vfill
+    
+    {\large Praha 2026} \\
+\end{center}
+
+\newpage
+{\large\textbf{Zadání}}
+
+\begin{center}
+    \includegraphics[width=1\linewidth]{zadani1.png}
+\end{center}
+
+\underline {Údaje o bonusových úlohách}
+
+Ze zadaných kroků byly řešeny následující:
+\begin{itemize}
+    \item Výpočet meridiánové konvergence. (+5b) 
+
+\end{itemize}
+
+\newpage
+\section{Teoretický rozbor problému}
+Cílem úlohy je transformace zeměpisných souřadnic bodů z globálního systému WGS-84 do národního systému S-JTSK (Křovákovo zobrazení). Celý proces zahrnuje přechod mezi dvěma referenčními elipsoidy (WGS-84 a Besselovým), zobrazení z elipsoidu na Gaussovu kouli a následné zobrazení z koule do roviny pomocí Křovákova konformního kuželového zobrazení. Výpočet je doplněn o určení lokálních charakteristik zobrazení: délkového zkreslení a meridiánové konvergence.
+
+\subsection{Transformace mezi elipsoidy}
+Transformace bodů mezi zdrojovým elipsoidem (WGS-84) a cílovým elipsoidem (Besselovým) probíhá ve třech fázích:
+
+\subsubsection{Převod na geocentrické souřadnice}
+Zeměpisné souřadnice $[\varphi, \lambda]$ se převedou na geocentrické prostorové souřadnice $[X, Y, Z]$:
+\[
+\begin{pmatrix} X \\ Y \\ Z \end{pmatrix} = N \begin{pmatrix} \cos \varphi \cos \lambda \\ \cos \varphi \sin \lambda \\ (1-e^2) \sin \varphi \end{pmatrix}
+\]
+kde $N$ je příčný poloměr křivosti a $e^2$ je první excentricita elipsoidu:
+\[
+N = \frac{a}{W}, \quad W = \sqrt{1 - e^2 \sin^2 \varphi}, \quad e^2 = \frac{a^2 - b^2}{a^2}
+\]
+
+\subsubsection{Helmertova transformace}
+Propojení obou geocentrických systémů zajišťuje sedmiprvková podobnostní transformace:
+\[
+\begin{pmatrix} X \\ Y \\ Z \end{pmatrix} = m \mathbf{R} \begin{pmatrix} X' \\ Y' \\ Z' \end{pmatrix} + \begin{pmatrix} \Delta X \\ \Delta Y \\ \Delta Z \end{pmatrix}
+\]
+Díky malým úhlům rotace ($\omega_x, \omega_y, \omega_z$) lze rotační matici $\mathbf{R}$ zjednodušit na lineární tvar:
+\[
+\mathbf{R} = \begin{pmatrix} 1 & \omega_z & -\omega_y \\ -\omega_z & 1 & \omega_x \\ \omega_y & -\omega_x & 1 \end{pmatrix}
+\]
+
+\subsubsection{Zpětný převod na zeměpisné souřadnice}
+Z transformovaných geocentrických souřadnic na Besselově elipsoidu se určí zeměpisná délka $\lambda$ a šířka $\varphi$:
+\[
+\tan \lambda = \frac{Y}{X}, \quad \tan \varphi = \frac{Z}{(1 - e^2) \sqrt{X^2 + Y^2}}
+\]
+
+\subsection{Křovákův systém zobrazení}
+Besselův elipsoid je zobrazen na Gaussovu kouli a následně do roviny na obecný kužel. Souřadnice v rovině jsou definovány jako polární: průvodič $\rho$ a polární úhel (rovinná konvergence) $\epsilon$. Výsledné souřadnice $Y, X$ jsou pak dány:
+\[
+Y = \rho \sin \epsilon, \quad X = \rho \cos \epsilon
+\]
+
+\subsection{Meridiánová konvergence}
+Meridiánová konvergence $C$ vyjadřuje úhel mezi obrazem geografického poledníku a osou $X$ souřadnicového systému. V Křovákově zobrazení se tato hodnota počítá jako součet dvou složek:
+
+\subsubsection{Sférická konvergence ($C_1$)}
+Tato složka vzniká při zobrazení elipsoidických poledníků na Gaussovu kouli v šikmém aspektu. Vyjadřuje odchylku mezi obrazem poledníku a vertikálou šikmého pólu:
+\[
+\sin C_1 = \frac{\cos U_k \cdot \sin(V_k - V)}{\cos S}
+\]
+kde $U_k, V_k$ jsou souřadnice pólu zobrazení a $[S, V]$ jsou souřadnice bodu na kouli.
+
+\subsubsection{Rovinná konvergence ($C_2$)}
+Odpovídá polárnímu úhlu $\epsilon$ v rovině zobrazení. Vyjadřuje úhel mezi obrazem poledníku na kouli a osou $X$ kužele:
+\[
+C_2 = \epsilon = n \cdot d
+\]
+kde $n = \sin S_0$ je konstanta kužele. Celková meridiánová konvergence je pak dána vztahem $C = C_1 + C_2$.
+
+\subsection{Délkové zkreslení}
+Délkové zkreslení $m-1$ popisuje změnu měřítka v daném bodě oproti skutečnosti. V Křovákově zobrazení se skládá z parciálního zkreslení při přechodu z elipsoidu na kouli ($m_1$) a z koule na kužel ($m_2$):
+\[
+m = m_1 \cdot m_2 = \frac{R \cos u}{N \cos \varphi} \cdot \frac{\rho \cdot n}{R \cos s}
+\]
+\newpage
+\section{Vypracování}
+\subsection{Vývojové prostředí a zvolená metodika}
+K řešení zadané úlohy byl zvolen programovací jazyk Python, který umožnil plnou automatizaci transformačního řetězce z globálního elipsoidu WGS-84 do roviny Křovákova zobrazení (S-JTSK). Algoritmus byl rozdělen do dvou souborů: hlavního skriptu \texttt{u1.py}, který zastřešuje řízení transformace, a pomocného modulu \texttt{uvtosd.py}, v němž byla implementována sférická trigonometrie pro přechod na šikmý kartografický pól. Pro veškeré goniometrické výpočty a práci s matematickými konstantami byla využita knihovna \texttt{math}.
+
+\subsection{Charakteristika vstupních dat}
+Vstupní data představují zeměpisné souřadnice dvou bodů ($P_1$ – Chodov, $P_2$ – Albertov), které byly získány měřením pomocí GPS aparatury na referenčním elipsoidu WGS-84. Tyto souřadnice byly pro potřeby výpočtu zavedeny v desetinných stupních a následně transformovány na radiány. Geometrické parametry zdrojového (WGS-84) a cílového (Besselova) elipsoidu byly definovány pomocí hodnot jejich poloos $a, b$ a příslušných excentricit $e^2$.
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{Bod} & \textbf{Zeměpisná šířka $\varphi$ [°]} & \textbf{Zeměpisná délka $\lambda$ [°]} \\ \hline
+$P_1$ & 50,03060 & 14,51013 \\ \hline
+$P_2$ & 50,06889 & 14,42449 \\ \hline
+\end{tabular}
+\caption{Vstupní zeměpisné souřadnice bodů v systému WGS-84.}
+\end{table}
+
+\subsection{Implementace transformačního algoritmu}
+Výpočet byl zahájen převodem zeměpisných souřadnic $[\varphi', \lambda']$ na prostorové geocentrické souřadnice $[X', Y', Z']$. Následně byla aplikována prostorová podobnostní Helmertova transformace :
+\[
+\mathbf{P} = m\mathbf{R}\mathbf{P}' + \mathbf{\Delta}
+\]
+Při výpočtu byl využit sedmiprvkový transformační klíč schválený pro území ČR, zahrnující tři posuny ($\Delta X, \Delta Y, \Delta Z$), tři rotace ($\omega_x, \omega_y, \omega_z$) a měřítkový koeficient $m$. Vzhledem k malým hodnotám úhlů rotace byla využita zjednodušená rotační matice $\mathbf{R}$ vycházející z lineárních členů Maclaurinova rozvoje.
+
+Z geocentrických souřadnic byly analyticky odvozeny zeměpisné souřadnice na Besselově elipsoidu. Hodnota zeměpisné délky byla korigována o konstantu $17^\circ 40'$, čímž byl zajištěn převod k Ferrskému poledníku. Besselův elipsoid byl následně zobrazen na náhradní Gaussovu kouli pomocí konformního zobrazení s nezkreslenou rovnoběžkou $\varphi_0 = 49,5^\circ$.
+
+\subsection{Kartografická zobrazení a převod do JTSK}
+Pro výpočet souřadnic v šikmém aspektu byla využita funkce \texttt{uvTosd} z modulu \texttt{uvtosd.py}. Tato funkce na základě sférických souřadnic $[u, v]$ a pevně definovaných souřadnic kartografického pólu $[u_k, v_k]$ spočítala kartografickou šířku $s$ a délku $d$.
+
+Následně bylo aplikováno Lambertovo kuželové konformní zobrazení, jímž byly určeny polární souřadnice (průvodič $\rho$ a polární úhel $\varepsilon$) na rozvinutém plášti kužele. V tomto kroku byla uvažována nezkreslená rovnoběžka $S_0 = 78,5^\circ$ a multiplikační konstanta $\mu = 0,9999$ pro redukci délkového zkreslení. Finálním krokem byl převod polárních souřadnic do pravoúhlého systému S-JTSK s osami $X$ a $Y$ orientovanými kladně na jih a západ.
+
+\subsection{Výpočet charakteristik zobrazení}
+Nad rámec určení polohy byly vypočteny doplňkové charakteristiky zobrazení. Délkové zkreslení $m-1$ bylo stanoveno jako součin parciálních zkreslení z elipsoidu na kouli a z koule na kužel. Meridiánová konvergence $C$ byla určena jako rozdíl mezi rovinnou konvergencí na kuželi a sférickou konvergencí na Gaussově kouli.
+
+\newpage
+\section{Výsledky}
+
+V této kapitole jsou prezentovány finální výsledky transformace souřadnic ze systému WGS-84 do roviny Křovákova zobrazení (S-JTSK) pro zvolené body $P_1$ (Chodov) a $P_2$ (Albertov). Veškeré hodnoty byly získány pomocí algoritmů implementovaných v jazyce Python, které byly podrobně popsány v kapitole Vypracování.
+
+\subsection{Souřadnice v systému S-JTSK}
+Výsledné pravoúhlé souřadnice $Y$ a $X$ byly v souladu se zadáním určeny s přesností na dvě desetinná místa (centimetry). Hodnoty jsou shrnuty v tabulce č. 2.
+
+\subsection{Porovnání s katalogovými údaji ČÚZK}
+Pro ověření přesnosti transformace byly z databáze geodetických údajů ČÚZK vyhledány katalogové souřadnice obou bodů. Konkrétně se jednalo o bod č. 568 (Albertov) a bod č. 990 (Bachova). V tabulce č. 2 je uvedeno srovnání vypočtených hodnot s hodnotami oficiálními, včetně vyčíslených rozdílů $dY$ a $dX$.
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|l|c|r|r|r|}
+\hline
+\textbf{Bod} & \textbf{Osa} & \textbf{Vypočteno [m]} & \textbf{Katalog [m]} & \textbf{Rozdíl [m]} \\ \hline
+$P_1$ (990) & $Y$ & 737 363,41 & 737 363,96 & -0,55 \\ 
+ & $X$ & 1 050 142,83 & 1 050 143,87 & -1,04 \\ \hline
+$P_2$ (568) & $Y$ & 742 861,81 & 742 857,95 & 3,86 \\ 
+ & $X$ & 1 045 091,27 & 1 045 090,46 & 0,81 \\ \hline
+\end{tabular}
+\caption{Srovnání vypočtených a katalogových souřadnic v systému S-JTSK.}
+\end{table}
+
+Z výše uvedeného srovnání vyplývá, že dosažené odchylky se pohybují v řádu decimetrů až jednotek metrů. Tyto diference jsou způsobeny použitím globálních transformačních parametrů Helmertovy transformace, které nezahrnují lokální deformační pole sítě S-JTSK a nepřesnosti při měření GPS aparaturou. Pro dosažení vyšší přesnosti (v řádu centimetrů) by bylo nutné aplikovat dodatečnou lokální dotransformaci, což však nebylo předmětem této základní úlohy.
+
+\subsection{Charakteristiky zobrazení}
+Kromě polohových souřadnic byly vyčísleny také charakteristiky popisující lokální vlastnosti zobrazení v daných místech. Jedná se o délkové zkreslení $m-1$ a meridiánovou konvergenci $C$. Hodnoty těchto veličin jsou uvedeny v tabulce č. 3.
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|l|c|c|c|}
+\hline
+\textbf{Bod} & \textbf{Délkové zkreslení ($m-1$)} & \textbf{Zkreslení [cm/km]} & \textbf{Konvergence $C$ [$^\circ$]} \\ \hline
+$P_1$ & $-6,9435 \cdot 10^{-4}$ & $-69,44$ & $-7,7644$ \\ \hline
+$P_2$ & $-6,9399 \cdot 10^{-4}$ & $-69,40$ & $-7,8299$ \\ \hline
+\end{tabular}
+\caption{Vypočtené hodnoty délkového zkreslení a meridiánové konvergence.}
+\end{table}
+
+Z vypočtených hodnot délkového zkreslení vyplývá, že se oba body nacházejí v oblasti se záporným zkreslením, což indikuje zkrácení obrazu délek vzhledem k realitě. Tato skutečnost plně odpovídá charakteru Křovákova zobrazení v centrální části území České republiky. Hodnoty meridiánové konvergence se pohybují v rozmezí $-7,7^\circ$ až $-7,8^\circ$, což je v souladu s geografickou polohou bodů a orientací souřadnicových os v systému S-JTSK.
+
+Na základě vypočtených souřadnic byly obrazy bodů vizualizovány na podkladové mapě OpenStreetMap (viz obr. 1).
+V mapě jsou zakresleny obrazy bodů vzniklých výpočtem bez zanedbání.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{mapa_body.png}
+    \caption{Vizualizace obrazů bodů a jejich blízkého okolí.}
+\end{figure}
+
+\newpage
+\section{Závěr}
+
+V rámci předložené práce byl úspěšně realizován kompletní transformační proces zeměpisných souřadnic z globálního systému WGS-84 do národního systému S-JTSK. Pro účely výpočtu byl v prostředí Python vytvořen algoritmus, který umožnil plynulý přechod mezi referenčními elipsoidy a následné zobrazení bodů do roviny Křovákova zobrazení.
+
+Na základě dosažených výsledků lze konstatovat, že vypočtené souřadnice $Y$ a $X$ pro sledované body $P_1$ a $P_2$ vykazují vysokou vnitřní shodu s teoretickými předpoklady. Zjištěné drobné odchylky v řádu metrů oproti deklarovaným souřadnicím trigonometrických bodů jsou způsobeny využitím standardní sedmiprvkové Helmertovy transformace, která bez dodatečné lokální dotransformace nepostihuje lokální nepravidelnosti sítě S-JTSK v plném rozsahu.
+
+V rámci analýzy charakteristik zobrazení byly v obou bodech vyčísleny hodnoty délkového zkreslení a meridiánové konvergence. Záporné hodnoty délkového zkreslení (přibližně $-70$ cm/km) potvrzují polohu bodů v centrální části zobrazovacího pásu Křovákova zobrazení, kde je měřítko délek záměrně zmenšeno aplikací multiplikační konstanty $\mu = 0,9999$. Vypočtená meridiánová konvergence v rozsahu $-7,7^\circ$ až $-7,8^\circ$ odpovídá zeměpisné poloze lokalit v oblasti Prahy a správné orientaci kartografických poledníků vůči ose $X$.
+
+\newpage
+\section{Zdroje}
+BAYER, Tomáš. \textit{Přednášky předmětu Matematická kartografie} [online]. Praha: Přírodovědecká fakulta Univerzity Karlovy. 2026a [cit. 2026-05-11]. Dostupné z: \url{https://web.natur.cuni.cz/~bayertom/index.php/teaching/matematicka-kartografie}
+
+BAYER, Tomáš. \textit{Výpočet souřadnic bodů v rovině Křovákova zobrazení (návod na cvičení)} [online]. Praha: Přírodovědecká fakulta Univerzity Karlovy. 2026b [cit. 2026-05-11]. Dostupné z: \url{https://web.natur.cuni.cz/~bayertom/images/courses/mmk/mmk_cv_1_new.pdf}
+\end{document}
