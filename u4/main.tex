@@ -143,53 +143,52 @@ Jádrem algoritmu je funkce \texttt{project()}, která slouží k transformaci s
 
 Projekce sférických souřadnic do roviny probíhá zavoláním vytvořeného objektu \texttt{my\_proj(lon, lat)}. Zásadní je pro výpočet variačních kritérií využití metody \texttt{get\_factors(lon, lat)}, která pro danou mřížku bodů odvodí deformační parametry. Z vráceného objektu jsou následně extrahovány vlastnosti \texttt{tissot\_semimajor} (hlavní poloosa $a$) a \texttt{tissot\_semiminor} (vedlejší poloosa $b$) do podoby samostatných matic.
 
-Ve funkci \texttt{graticule()}, která slouží ke konstrukci poledníků a rovnoběžek, jsou pomocí metody \texttt{arange()} vygenerovány vektory s definovaným úhlovým krokem (\texttt{Dlat, Dlon} pro hlavní síť a jemnější \texttt{dlat, dlon} pro plynulé zakřivení linií). Základní výpočetní prostor pro plošnou analýzu států EU je vytvořen pomocí metody \texttt{linspace()}, která vygeneruje vektory 100 rovnoměrně rozložených hodnot mezi hraničními souřadnicemi \texttt{lat\_min} a \texttt{lat\_max}. Tyto 1D vektory jsou následně pomocí metody \texttt{meshgrid()} transformovány do 2D matic \texttt{latg} a \texttt{long}.
+Ve funkci \texttt{graticule()}, která slouží ke konstrukci poledníků a rovnoběžek, jsou pomocí metody \texttt{arange()} vygenerovány vektory s definovaným úhlovým krokem ($5^\circ$ pro hlavní síť a jemnější $0{,}5^\circ$ pro plynulé zakřivení linií). Základní výpočetní prostor pro plošnou analýzu států EU je vymezen parametry $u$ (zeměpisná délka) v rozsahu $\langle -12^\circ, 35^\circ \rangle$ a $v$ (zeměpisná šířka) v rozsahu $\langle 34^\circ, 72^\circ \rangle$. Tento prostor je vytvořen pomocí metody \texttt{linspace()}, která vygeneruje vektory 100 rovnoměrně rozložených hodnot mezi hraničními souřadnicemi, což odpovídá výpočetnímu kroku přibližně $0{,}47^\circ$ pro $u$ a $0{,}38^\circ$ pro $v$. Tyto 1D vektory jsou následně pomocí metody \texttt{meshgrid()} transformovány do 2D matic \texttt{latg} a \texttt{long}.
 
 Získané matice poloos $a$ a $b$ jsou zpracovány do podoby lokálních kritérií \texttt{h2\_a} (Airyho) a \texttt{h2\_c} (komplexní). Pro získání globálních kritérií jsou využity agregační funkce. Nevážená varianta je získána voláním metody \texttt{mean()} nad maticemi lokálních kritérií. U vážené varianty je nejprve definována matice vah $w$ pomocí goniometrické funkce $cos()$, do které vstupují zeměpisné šířky. Následně je aplikován vzorec pro vážený průměr s využitím metody \texttt{sum()} aplikované na součin váhy a lokálního kritéria, jež je vydělen sumou všech vah \texttt{(sum(w*h2\_a)/sum(w))}.
 
 \newpage
 {\large \textbf {5 Výsledky}}
-\begin{figure}[h!]
-  \centering
-  \begin{minipage}{0.4\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{bonne.png}
-    \caption{Bonneovo}
-  \end{minipage}
-  \hfill
-  \begin{minipage}{0.4\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{mercsans.png}
-    \caption{Mercator-Sansonovo}
-  \end{minipage}
 
-  \vspace{1em}
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=1 \linewidth, trim= 5 5 5 70, clip]{bonne.png}
+    \caption{Bonneovo zobrazení}
+\end{figure}
 
-  \begin{minipage}{0.4\textwidth}
+\newpage
+\begin{figure}[!ht]
     \centering
-    \includegraphics[width=\linewidth]{eck5.png}
-    \caption{Eckertovo V.}
-  \end{minipage}
-  \hfill
-  \begin{minipage}{0.4\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{wintri.png}
-    \caption{Winkel-Tripel}
-  \end{minipage}
+    \includegraphics[width=1 \linewidth, trim= 5 5 5 70, clip]{mercsans.png}
+    \caption{Mercator-Sansonovo zobrazení}
+\end{figure}
 
-  \vspace{1em}
+\newpage
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=1\linewidth, trim= 5 5 5 70, clip]{eck5.png}
+    \caption{Eckertovo V. zobrazení}
+\end{figure}
 
-  \begin{minipage}{0.4\textwidth}
+\newpage
+\begin{figure}[!ht]
     \centering
-    \includegraphics[width=\linewidth]{hammer.png}
-    \caption{Hammerovo}
-  \end{minipage}
-  \hfill
-  \begin{minipage}{0.4\textwidth}
+    \includegraphics[width=1\linewidth, trim= 5 5 5 70, clip]{wintri.png}
+    \caption{Winkel-Tripel zobrazení}
+\end{figure}
+
+\newpage
+\begin{figure}[!ht]
     \centering
-    \includegraphics[width=\linewidth]{lcc.png}
-    \caption{LCC}
-  \end{minipage}
+    \includegraphics[width=1\linewidth, trim= 5 5 5 70, clip]{hammer.png}
+    \caption{Hammerovo zobrazení}
+\end{figure}
+
+\newpage
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=1\linewidth, trim= 5 5 5 70, clip]{lcc.png}
+    \caption{LCC zobrazení}
 \end{figure}
 
 \newpage
