@@ -1,8 +1,7 @@
 dvanactisten:
-proj +proj=gnom +lat_0=26.5651 +lon_0=0 +R=6380000 -V
+echo 72 58.2825 | proj +proj=gnom +lat_0=26.5651 +lon_0=0 +R=6380000 -V
 
 
 dvacetisten:
-proj +proj=gnom +lat_0=52.6226 +lon_0=36 +R=6380000 -V
-
+echo 36 31.7175 | proj +proj=gnom +lat_0=52.6226 +lon_0=36 +R=6380000 -V
 
